@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LOGIN COOPE ANDE - Aplicación de Solicitudes de Afiliación</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --azul-oscuro: #0f4c81;
+      --azul-medio: #2563eb;
+      --azul-suave: #dbeafe;
+      --gris-fondo: #f4f7fb;
+      --gris-borde: #dbe3ef;
+      --gris-texto: #475569;
+      --gris-titulo: #0f172a;
+      --blanco: #ffffff;
+      --verde: #15803d;
+      --amarillo: #b45309;
+      --rojo: #b91c1c;
+      --sombra: 0 20px 45px rgba(15, 76, 129, 0.12);
+      --radio-xl: 24px;
+      --radio-lg: 18px;
+      --radio-md: 14px;
+      --radio-sm: 10px;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(15, 76, 129, 0.10), transparent 24%),
+        linear-gradient(135deg, #eef4ff 0%, #f7faff 55%, #eef5fb 100%);
+      color: var(--gris-titulo);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+    }
+
+    .layout {
+      width: 100%;
+      max-width: 1180px;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(219, 234, 254, 0.9);
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: var(--sombra);
+    }
+
+    .panel-branding {
+      position: relative;
+      background:
+        linear-gradient(145deg, rgba(15, 76, 129, 0.96), rgba(37, 99, 235, 0.94)),
+        linear-gradient(180deg, #0f4c81, #2563eb);
+      color: var(--blanco);
+      padding: 42px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 720px;
+      overflow: hidden;
+    }
+
+    .panel-branding::before,
+    .panel-branding::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      pointer-events: none;
+    }
+
+    .panel-branding::before {
+      width: 320px;
+      height: 320px;
+      top: -110px;
+      right: -60px;
+    }
+
+    .panel-branding::after {
+      width: 260px;
+      height: 260px;
+      bottom: -90px;
+      left: -70px;
+    }
+
+    .branding-top,
+    .branding-bottom {
+      position: relative;
+      z-index: 1;
+    }
+
+    .marca {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .marca-icono {
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.14);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 800;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+    }
+
+    .marca-texto strong {
+      display: block;
+      font-size: 18px;
+      line-height: 1.1;
+    }
+
+    .marca-texto span {
+      display: block;
+      font-size: 12px;
+      opacity: 0.88;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .hero-title {
+      margin: 0 0 14px;
+      font-size: 38px;
+      line-height: 1.08;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      max-width: 480px;
+    }
+
+    .hero-desc {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.8;
+      opacity: 0.95;
+      max-width: 500px;
+    }
+
+    .feature-stack {
+      margin-top: 34px;
+      display: grid;
+      gap: 14px;
+      max-width: 520px;
+    }
+
+    .feature-card {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 16px 18px;
+      background: rgba(255, 255, 255, 0.10);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 18px;
+    }
+
+    .feature-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.15);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .feature-card strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    .feature-card span {
+      display: block;
+      font-size: 13px;
+      line-height: 1.6;
+      opacity: 0.92;
+    }
+
+    .branding-bottom {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .mini-stat {
+      background: rgba(255, 255, 255, 0.10);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .mini-stat span {
+      display: block;
+      font-size: 12px;
+      opacity: 0.85;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 700;
+    }
+
+    .mini-stat strong {
+      display: block;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .panel-login {
+      background: var(--blanco);
+      padding: 42px 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 430px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      margin-bottom: 16px;
+    }
+
+    .login-title {
+      margin: 0 0 10px;
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--gris-titulo);
+      line-height: 1.15;
+    }
+
+    .login-desc {
+      margin: 0 0 28px;
+      color: var(--gris-texto);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .card {
+      background: var(--blanco);
+      border: 1px solid #e5edf6;
+      border-radius: var(--radio-xl);
+      box-shadow: 0 16px 38px rgba(15, 23, 42, 0.05);
+    }
+
+    .form-card {
+      padding: 24px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+    }
+
+    .field label {
+      font-size: 13px;
+      font-weight: 800;
+      color: #334155;
+      letter-spacing: 0.01em;
+    }
+
+    .required::after {
+      content: " *";
+      color: var(--rojo);
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: #64748b;
+      pointer-events: none;
+    }
+
+    .field input {
+      width: 100%;
+      border: 1px solid var(--gris-borde);
+      border-radius: 14px;
+      padding: 14px 14px 14px 44px;
+      font-size: 14px;
+      color: var(--gris-titulo);
+      background: #fcfdff;
+      outline: none;
+      transition: 0.2s ease;
+    }
+
+    .field input:focus {
+      border-color: var(--azul-medio);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+      background: #ffffff;
+    }
+
+    .field.error input {
+      border-color: #fca5a5;
+      background: #fff7f7;
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.08);
+    }
+
+    .field.success input {
+      border-color: #86efac;
+      background: #f6fff8;
+    }
+
+    .error-text {
+      min-height: 16px;
+      font-size: 12px;
+      color: var(--rojo);
+      line-height: 1.3;
+    }
+
+    .helper-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: -2px;
+      margin-bottom: 4px;
+    }
+
+    .helper-text {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .link-action {
+      font-size: 13px;
+      color: var(--azul-medio);
+      font-weight: 700;
+      text-decoration: none;
+      transition: 0.2s ease;
+    }
+
+    .link-action:hover {
+      color: var(--azul-oscuro);
+    }
+
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 15px 18px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.22s ease;
+    }
+
+    .btn-primary {
+      color: var(--blanco);
+      background: linear-gradient(90deg, var(--azul-medio), var(--azul-oscuro));
+      box-shadow: 0 16px 28px rgba(37, 99, 235, 0.22);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      opacity: 0.98;
+    }
+
+    .btn-primary:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+      box-shadow: none;
+    }
+
+    .status-box {
+      display: none;
+      margin-bottom: 18px;
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-size: 13px;
+      line-height: 1.6;
+      border: 1px solid transparent;
+    }
+
+    .status-box.visible {
+      display: block;
+    }
+
+    .status-box.error {
+      background: #fff5f5;
+      color: #991b1b;
+      border-color: #fecaca;
+    }
+
+    .status-box.success {
+      background: #f0fdf4;
+      color: #166534;
+      border-color: #bbf7d0;
+    }
+
+    .security-note {
+      margin-top: 18px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 15px 16px;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+    }
+
+    .security-note-icon {
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 16px;
+    }
+
+    .security-note strong {
+      display: block;
+      font-size: 13px;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .security-note span {
+      display: block;
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 980px) {
+      body {
+        padding: 16px;
+        align-items: stretch;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-branding {
+        min-height: auto;
+        padding: 28px 24px;
+      }
+
+      .hero-title {
+        font-size: 30px;
+      }
+
+      .branding-bottom {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-login {
+        padding: 28px 20px;
+      }
+
+      .login-title {
+        font-size: 26px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .form-card {
+        padding: 18px;
+      }
+
+      .helper-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .hero-title {
+        font-size: 27px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <section class="panel-branding">
+      <div class="branding-top">
+        <div class="marca">
+          <div class="marca-icono">CA</div>
+          <div class="marca-texto">
+            <strong>COOPE ANDE</strong>
+            <span>Solicitudes de afiliación</span>
+          </div>
+        </div>
+
+        <h1 class="hero-title">Acceso seguro a la aplicación de solicitudes de afiliación</h1>
+        <p class="hero-desc">
+          Ingrese con sus credenciales para gestionar solicitudes, revisar formularios y dar seguimiento al proceso de afiliación desde una única plataforma corporativa.
+        </p>
+
+        <div class="feature-stack">
+          <div class="feature-card">
+            <div class="feature-icon">✓</div>
+            <div>
+              <strong>Gestión centralizada</strong>
+              <span>Acceda a la operación desde una interfaz profesional, clara y preparada para el seguimiento completo de solicitudes.</span>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <div>
+              <strong>Ingreso protegido</strong>
+              <span>La autenticación controla el acceso a información sensible y mantiene la experiencia alineada a un entorno empresarial.</span>
+            </div>
+          </div>
+
+         
+        </div>
+      </div>
+
+      
+    </section>
+
+    <section class="panel-login">
+      <div class="login-card">
+       
+        <h2 class="login-title">Inicio de sesión</h2>
+        
+
+        <div id="mensajeEstado" class="status-box" aria-live="polite"></div>
+
+        <div class="card form-card">
+          <form id="formLogin" novalidate>
+            <div class="grid">
+              <div class="field" id="grupoUsuario">
+                <label class="required" for="usuario">Usuario (correo)</label>
+                <div class="input-wrap">
+                  <span class="input-icon">✉</span>
+                  <input
+                    id="usuario"
+                    name="usuario"
+                    type="email"
+                    placeholder="usuario@coopeande.com"
+                    autocomplete="username"
+                    required
+                  />
+                </div>
+                <div class="error-text" id="errorUsuario"></div>
+              </div>
+
+              <div class="field" id="grupoClave">
+                <label class="required" for="clave">Clave</label>
+                <div class="input-wrap">
+                  <span class="input-icon">🔒</span>
+                  <input
+                    id="clave"
+                    name="clave"
+                    type="password"
+                    placeholder="Ingrese su clave"
+                    autocomplete="current-password"
+                    required
+                  />
+                </div>
+                <div class="error-text" id="errorClave"></div>
+              </div>
+
+              
+              <button type="submit" class="btn btn-primary" id="btnIniciarSesion" disabled>
+                Iniciar sesión
+              </button>
+            </div>
+          </form>
+
+          <div class="security-note">
+            <div class="security-note-icon">🛡</div>
+            <div>
+              <strong>Acceso controlado</strong>
+              <span>Utilice sus credenciales corporativas. El botón de inicio de sesión se habilita únicamente cuando se ingresa usuario y clave.</span>
+            </div>
+          </div>
+
+          <div class="footer-note">
+            Plataforma diseñada para la gestión de solicitudes de afiliación.
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const formLogin = document.getElementById('formLogin');
+    const usuario = document.getElementById('usuario');
+    const clave = document.getElementById('clave');
+    const btnIniciarSesion = document.getElementById('btnIniciarSesion');
+    const mensajeEstado = document.getElementById('mensajeEstado');
+    const olvideClave = document.getElementById('olvideClave');
+
+    function mostrarMensaje(tipo, texto) {
+      mensajeEstado.className = 'status-box visible ' + tipo;
+      mensajeEstado.textContent = texto;
+    }
+
+    function limpiarMensaje() {
+      mensajeEstado.className = 'status-box';
+      mensajeEstado.textContent = '';
+    }
+
+    function validarCorreo(valor) {
+      const patron = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return patron.test(valor.trim());
+    }
+
+    function marcarCampo(idGrupo, idError, mensaje) {
+      const grupo = document.getElementById(idGrupo);
+      const error = document.getElementById(idError);
+
+      grupo.classList.remove('success');
+      grupo.classList.add('error');
+      error.textContent = mensaje;
+    }
+
+    function marcarCampoValido(idGrupo, idError) {
+      const grupo = document.getElementById(idGrupo);
+      const error = document.getElementById(idError);
+
+      grupo.classList.remove('error');
+      error.textContent = '';
+
+      const input = grupo.querySelector('input');
+      if (input && input.value.trim() !== '') {
+        grupo.classList.add('success');
+      } else {
+        grupo.classList.remove('success');
+      }
+    }
+
+    function limpiarEstados() {
+      ['grupoUsuario', 'grupoClave'].forEach(id => {
+        const grupo = document.getElementById(id);
+        grupo.classList.remove('error');
+      });
+
+      document.getElementById('errorUsuario').textContent = '';
+      document.getElementById('errorClave').textContent = '';
+    }
+
+    function actualizarEstadoBoton() {
+      const usuarioCompleto = usuario.value.trim() !== '';
+      const claveCompleta = clave.value.trim() !== '';
+      btnIniciarSesion.disabled = !(usuarioCompleto && claveCompleta);
+    }
+
+    function validarFormulario() {
+      let valido = true;
+      limpiarEstados();
+
+      if (usuario.value.trim() === '') {
+        marcarCampo('grupoUsuario', 'errorUsuario', 'Ingrese el usuario.');
+        valido = false;
+      } else if (!validarCorreo(usuario.value)) {
+        marcarCampo('grupoUsuario', 'errorUsuario', 'Ingrese un correo válido.');
+        valido = false;
+      } else {
+        marcarCampoValido('grupoUsuario', 'errorUsuario');
+      }
+
+      if (clave.value.trim() === '') {
+        marcarCampo('grupoClave', 'errorClave', 'Ingrese la clave.');
+        valido = false;
+      } else {
+        marcarCampoValido('grupoClave', 'errorClave');
+      }
+
+      return valido;
+    }
+
+    function manejarCambioCampos() {
+      limpiarMensaje();
+      actualizarEstadoBoton();
+
+      if (usuario.value.trim() !== '') {
+        if (validarCorreo(usuario.value)) {
+          marcarCampoValido('grupoUsuario', 'errorUsuario');
+        } else {
+          marcarCampo('grupoUsuario', 'errorUsuario', 'Ingrese un correo válido.');
+        }
+      } else {
+        document.getElementById('grupoUsuario').classList.remove('error', 'success');
+        document.getElementById('errorUsuario').textContent = '';
+      }
+
+      if (clave.value.trim() !== '') {
+        marcarCampoValido('grupoClave', 'errorClave');
+      } else {
+        document.getElementById('grupoClave').classList.remove('error', 'success');
+        document.getElementById('errorClave').textContent = '';
+      }
+    }
+
+    usuario.addEventListener('input', manejarCambioCampos);
+    clave.addEventListener('input', manejarCambioCampos);
+
+    formLogin.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      if (!validarFormulario()) {
+        mostrarMensaje('error', 'Revise los campos resaltados para continuar.');
+        return;
+      }
+
+      mostrarMensaje('success', 'Credenciales completadas correctamente. Inicio de sesión listo para continuar.');
+    });
+
+    olvideClave.addEventListener('click', function (e) {
+      e.preventDefault();
+      mostrarMensaje('success', 'Se ha seleccionado la opción de recuperación de contraseña.');
+    });
+
+    actualizarEstadoBoton();
+  </script>
+</body>
+</html>
