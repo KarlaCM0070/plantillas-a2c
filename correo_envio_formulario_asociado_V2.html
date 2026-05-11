@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Correo - Actualización de información del asociado</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f3f6fb;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #1f2937;
+    }
+    table {
+      border-collapse: collapse;
+    }
+    .wrapper {
+      width: 100%;
+      background: #f3f6fb;
+      padding: 32px 12px;
+    }
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 10px 30px rgba(15, 76, 129, 0.08);
+    }
+    .hero {
+      background: linear-gradient(90deg, #0f4c81, #2563eb);
+      padding: 32px 28px;
+      color: #ffffff;
+    }
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 26px;
+      line-height: 1.2;
+    }
+    .hero p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.6;
+      opacity: 0.95;
+    }
+    .content {
+      padding: 28px;
+    }
+    .content p {
+      margin: 0 0 16px;
+      font-size: 15px;
+      line-height: 1.7;
+      color: #374151;
+    }
+    .box {
+      background: #f8fafc;
+      border: 1px solid #dbeafe;
+      border-radius: 14px;
+      padding: 18px;
+      margin: 20px 0;
+    }
+    .box h3 {
+      margin: 0 0 12px;
+      font-size: 16px;
+      color: #0f4c81;
+    }
+    .detail-row {
+      margin: 0 0 8px;
+      font-size: 14px;
+      color: #374151;
+      line-height: 1.6;
+    }
+    .detail-row strong {
+      color: #0f172a;
+      min-width: 110px;
+      display: inline-block;
+    }
+    .box ul {
+      margin: 0;
+      padding-left: 18px;
+      color: #4b5563;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .cta-wrap {
+      text-align: center;
+      margin: 28px 0;
+    }
+    .cta {
+      display: inline-block;
+      background: linear-gradient(90deg, #2563eb, #0f4c81);
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: bold;
+      padding: 14px 28px;
+      border-radius: 12px;
+    }
+    .link-box {
+      margin-top: 16px;
+      padding: 12px 14px;
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 12px;
+      font-size: 13px;
+      color: #6b7280;
+      word-break: break-all;
+    }
+    .footer {
+      padding: 18px 28px 28px;
+      font-size: 12px;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+    @media only screen and (max-width: 640px) {
+      .hero, .content, .footer {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+      .hero h1 {
+        font-size: 22px;
+      }
+      .detail-row strong {
+        display: block;
+        min-width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="container">
+      <div class="hero">
+        <h1>Actualización de información del asociado</h1>
+        <p>Le invitamos a completar y validar sus datos mediante el formulario de autogestión.</p>
+      </div>
+
+      <div class="content">
+        <p>Estimado(a) <strong>{{NombreAsociado}}</strong>,</p>
+
+        <p>
+          Esperamos se encuentre bien.
+        </p>
+
+        <p>
+          Con el objetivo de mantener su información actualizada, le solicitamos completar el formulario de actualización de datos correspondiente a su registro como asociado.
+        </p>
+
+        <div class="box">
+          <h3>Datos del asociado</h3>
+          <div class="detail-row"><strong>Nombre:</strong> {{NombreAsociado}}</div>
+          <div class="detail-row"><strong>Identificación:</strong> {{Cedula}}</div>
+        </div>
+
+        <p>
+          Para continuar con el proceso, por favor ingrese al siguiente enlace y complete la información requerida:
+        </p>
+
+        <div class="cta-wrap">
+          <a href="{{EnlaceFormulario}}" class="cta">Completar formulario</a>
+          <div class="link-box">{{EnlaceFormulario}}</div>
+        </div>
+
+        <div class="box">
+          <h3>Antes de iniciar, tenga a mano:</h3>
+          <ul>
+            <li>Su documento de identificación.</li>
+            <li>Información laboral y financiera actualizada, en caso de aplicar.</li>
+            <li>Datos de beneficiarios, si corresponde.</li>
+          </ul>
+        </div>
+
+        <p>
+          Puede avanzar entre las secciones del formulario y completarlo en distintos momentos; sin embargo, le recomendamos revisarlo en su totalidad antes de enviarlo.
+        </p>
+
+        <p>
+          Si requiere asistencia, no dude en comunicarse con nosotros a través de los canales oficiales de atención.
+        </p>
+
+        <p style="margin-top: 24px;">
+          Saludos cordiales,<br />
+          <strong>Equipo de Atención al Asociado</strong>
+        </p>
+      </div>
+
+      <div class="footer">
+        Este mensaje ha sido generado para la actualización de datos del asociado. Si usted considera que recibió este correo por error, favor omitirlo o contactar al equipo de soporte correspondiente.
+      </div>
+    </div>
+  </div>
+</body>
+</html>

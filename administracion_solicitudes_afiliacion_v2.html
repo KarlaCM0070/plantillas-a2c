@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Administración de Solicitudes</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: #f4f7fb;
+      color: #1f2937;
+    }
+    .layout {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+    }
+    .sidebar {
+      background: linear-gradient(180deg, #0f4c81, #0b3a61);
+      color: white;
+      padding: 28px 20px;
+    }
+    .brand {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .brand-sub {
+      font-size: 13px;
+      opacity: .85;
+      margin-bottom: 28px;
+    }
+    .nav-btn {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 14px 16px;
+      text-align: left;
+      cursor: pointer;
+      margin-bottom: 10px;
+      background: rgba(255,255,255,0.12);
+      color: white;
+      font-weight: 700;
+      transition: .2s ease;
+    }
+    .nav-btn.active,
+    .nav-btn:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    .main {
+      padding: 28px;
+    }
+    .page { display: none; }
+    .page.active { display: block; }
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+    .page-title {
+      font-size: 28px;
+      font-weight: 800;
+      margin: 0 0 6px;
+      color: #111827;
+    }
+    .page-desc {
+      margin: 0;
+      color: #6b7280;
+      font-size: 14px;
+    }
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1.2fr .9fr .9fr .9fr;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .stat-card {
+      padding: 18px;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 8px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: #0f4c81;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .field label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 12px 13px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      font-size: 14px;
+      background: white;
+      outline: none;
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+    .toolbar .card,
+    .filter-card {
+      padding: 16px;
+    }
+    .table-card {
+      overflow: hidden;
+    }
+    .table-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid #eef2f7;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .table-header h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #0f172a;
+    }
+    .table-wrap {
+      overflow: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1650px;
+    }
+    th, td {
+      border-bottom: 1px solid #eef2f7;
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+    th {
+      background: #f8fafc;
+      color: #334155;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .badge-blue { background: #dbeafe; color: #1d4ed8; }
+    .badge-green { background: #dcfce7; color: #15803d; }
+    .badge-yellow { background: #fef3c7; color: #b45309; }
+    .badge-red { background: #fee2e2; color: #b91c1c; }
+    .badge-gray { background: #e5e7eb; color: #4b5563; }
+    .row-alert {
+      background: #fff5f5;
+    }
+    .action-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 800;
+      transition: .2s ease;
+    }
+    .btn-primary { background: linear-gradient(90deg, #2563eb, #0f4c81); color: white; }
+    .btn-secondary { background: #e5e7eb; color: #374151; }
+    .btn-success { background: linear-gradient(90deg, #16a34a, #15803d); color: white; }
+    .btn-outline { background: white; color: #0f4c81; border: 1px solid #bfdbfe; }
+    .btn-danger { background: #ef4444; color: white; }
+    .btn:hover { opacity: .96; }
+    .detail-layout {
+      display: grid;
+      grid-template-columns: 1.25fr .85fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+    .detail-card,
+    .side-card {
+      padding: 20px;
+    }
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .section-title h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #0f172a;
+    }
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .detail-item {
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+    .detail-item span {
+      display: block;
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .detail-item strong {
+      font-size: 14px;
+      color: #0f172a;
+    }
+    .doc-list {
+      display: grid;
+      gap: 10px;
+    }
+    .doc-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      background: #fff;
+    }
+    .doc-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .doc-meta strong { font-size: 14px; color: #111827; }
+    .doc-meta span { font-size: 12px; color: #6b7280; }
+    .send-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .send-card {
+      padding: 22px;
+    }
+    .send-card p {
+      margin-top: 0;
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .stack { display: grid; gap: 14px; }
+    .helper {
+      font-size: 12px;
+      color: #6b7280;
+    }
+    .mail-preview {
+      border: 1px dashed #cbd5e1;
+      border-radius: 14px;
+      background: #f8fafc;
+      padding: 18px;
+    }
+    .mail-preview h4 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      color: #0f4c81;
+    }
+    .mail-preview p {
+      margin: 0 0 10px;
+      font-size: 14px;
+      color: #475569;
+      line-height: 1.7;
+    }
+    .hidden { display: none !important; }
+    @media (max-width: 1200px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { padding-bottom: 14px; }
+      .toolbar { grid-template-columns: 1fr 1fr; }
+      .stat-grid { grid-template-columns: 1fr 1fr; }
+      .detail-layout,
+      .send-layout { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .main { padding: 16px; }
+      .toolbar,
+      .stat-grid,
+      .details-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">Solicitudes</div>
+      <div class="brand-sub">Administración de afiliación y actualización</div>
+      <button class="nav-btn active" onclick="showPage('page-admin', this)">Administración de solicitudes</button>
+      <button class="nav-btn" onclick="showPage('page-envio', this)">Enviar solicitud a afiliado</button>
+    </aside>
+
+    <main class="main">
+      <section id="page-admin" class="page active">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Administración de solicitudes</h1>
+            <p class="page-desc">Visualice, filtre, revise documentos, gestione estados y consulte el expediente digital de cada solicitud.</p>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="card stat-card"><div class="stat-label">Solicitudes recibidas</div><div class="stat-value">128</div></div>
+          <div class="card stat-card"><div class="stat-label">Pendientes de respuesta asociado</div><div class="stat-value" style="color:#b91c1c;">14</div></div>
+          <div class="card stat-card"><div class="stat-label">En revisión manual</div><div class="stat-value" style="color:#b45309;">9</div></div>
+          <div class="card stat-card"><div class="stat-label">Documentos para firma</div><div class="stat-value" style="color:#15803d;">21</div></div>
+        </div>
+
+        <div class="toolbar">
+          <div class="card filter-card field">
+            <label>Buscar por nombre o cédula</label>
+            <input type="text" placeholder="Ej. Ana Pérez o 0912345678" />
+          </div>
+          <div class="card filter-card field">
+            <label>Origen de solicitud</label>
+            <select>
+              <option>Todos</option>
+              <option>Interna</option>
+              <option>Asociado</option>
+            </select>
+          </div>
+          <div class="card filter-card field">
+            <label>Estado RPA</label>
+            <select>
+              <option>Todos</option>
+              <option>Ingresado en SolinBanca</option>
+              <option>Documentos validados</option>
+              <option>Documentos pendientes</option>
+              <option>Documentos generados para firma</option>
+              <option>Revisión manual</option>
+            </select>
+          </div>
+          <div class="card filter-card field">
+            <label>Estado validación documental</label>
+            <select>
+              <option>Todos</option>
+              <option>Completa</option>
+              <option>Pendiente</option>
+              <option>Con novedades</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card table-card">
+          <div class="table-header">
+            <h3>Solicitudes recibidas</h3>
+            <button class="btn btn-primary">Exportar listado</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Asociado</th>
+                  <th>Cédula</th>
+                  <th>Origen</th>
+                  <th>Fecha envío asociado</th>
+                  <th>Tipo de cliente</th>
+                  <th>Fecha recibido</th>
+                  <th>Validación documental</th>
+                  <th>Estado RPA</th>
+                  <th>Validación de firma</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>SOL-0001</strong></td>
+                  <td>Ana María Pérez</td>
+                  <td>0912345678</td>
+                  <td><span class="badge badge-gray">Interna</span></td>
+                  <td>-</td>
+                  <td>Asociado</td>
+                  <td>2026-04-10 09:14</td>
+                  <td><span class="badge badge-green">Completa</span></td>
+                  <td><span class="badge badge-blue">Ingresado en SolinBanca</span></td>
+                  <td><span class="badge badge-gray">Pendiente</span></td>
+                  <td>
+                    <div class="action-stack">
+                      <button class="btn btn-outline">Descargar docs firma</button>
+                      <button class="btn btn-success">Cargar firmados</button>
+                      <button class="btn btn-primary" onclick="showDetail()">Ver detalle</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="row-alert">
+                  <td><strong>SOL-0002</strong></td>
+                  <td>Carlos Villalobos</td>
+                  <td>0102030405</td>
+                  <td><span class="badge badge-red">Asociado / Sin respuesta</span></td>
+                  <td>2026-04-08 15:42</td>
+                  <td>Asociado</td>
+                  <td>-</td>
+                  <td><span class="badge badge-yellow">Pendiente</span></td>
+                  <td><span class="badge badge-yellow">Documentos pendientes</span></td>
+                  <td><span class="badge badge-gray">No aplica</span></td>
+                  <td>
+                    <div class="action-stack">
+                      <button class="btn btn-outline">Descargar docs firma</button>
+                      <button class="btn btn-success">Cargar firmados</button>
+                      <button class="btn btn-secondary">Reenviar a RPA</button>
+                      <button class="btn btn-primary" onclick="showDetail()">Ver detalle</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>SOL-0003</strong></td>
+                  <td>Luisa Gómez</td>
+                  <td>0911223344</td>
+                  <td><span class="badge badge-blue">Asociado</span></td>
+                  <td>2026-04-09 11:10</td>
+                  <td>Asociado</td>
+                  <td>2026-04-09 14:33</td>
+                  <td><span class="badge badge-yellow">Con novedades</span></td>
+                  <td><span class="badge badge-red">Revisión manual</span></td>
+                  <td><span class="badge badge-yellow">Novedades</span></td>
+                  <td>
+                    <div class="action-stack">
+                      <button class="btn btn-outline">Descargar docs firma</button>
+                      <button class="btn btn-success">Cargar firmados</button>
+                      <button class="btn btn-secondary">Reenviar a RPA</button>
+                      <button class="btn btn-primary" onclick="showDetail()">Ver detalle</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>SOL-0004</strong></td>
+                  <td>Marvin Rojas</td>
+                  <td>0708091011</td>
+                  <td><span class="badge badge-gray">Interna</span></td>
+                  <td>-</td>
+                  <td>Prospecto</td>
+                  <td>2026-04-10 08:00</td>
+                  <td><span class="badge badge-green">Completa</span></td>
+                  <td><span class="badge badge-green">Documentos generados para firma</span></td>
+                  <td><span class="badge badge-green">Completada</span></td>
+                  <td>
+                    <div class="action-stack">
+                      <button class="btn btn-outline">Descargar docs firma</button>
+                      <button class="btn btn-success">Cargar firmados</button>
+                      <button class="btn btn-primary" onclick="showDetail()">Ver detalle</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="detailView" class="hidden">
+          <div class="detail-layout">
+            <div class="card detail-card">
+              <div class="section-title">
+                <h3>Detalle de la solicitud</h3>
+                <div class="action-stack">
+                  <button class="btn btn-outline" onclick="toggleExpediente()">Ver expediente digital</button>
+                  <button class="btn btn-outline">Descargar documentos habilitados para firma</button>
+                  <button class="btn btn-success">Cargar documentos firmados</button>
+                  <button class="btn btn-primary">Editar información de afiliado</button>
+                  <button class="btn btn-secondary" onclick="hideDetail()">Cerrar detalle</button>
+                </div>
+              </div>
+
+              <div id="expedientePanel" class="card" style="padding:16px; margin-bottom:16px; display:none; background:#f8fafc;">
+                <div class="section-title"><h3>Expediente digital</h3></div>
+                <div class="doc-list">
+                  <div class="doc-item"><div class="doc-meta"><strong>Cédula.pdf</strong><span>Cargado por asociado • 2026-04-09 14:31</span></div><button class="btn btn-outline">Ver</button></div>
+                  <div class="doc-item"><div class="doc-meta"><strong>Sicere.pdf</strong><span>Cargado por asociado • 2026-04-09 14:31</span></div><button class="btn btn-outline">Ver</button></div>
+                  <div class="doc-item"><div class="doc-meta"><strong>Contrato_firma.pdf</strong><span>Generado por RPA • 2026-04-09 15:10</span></div><button class="btn btn-outline">Ver</button></div>
+                  <div class="doc-item"><div class="doc-meta"><strong>Contrato_firmado.pdf</strong><span>Cargado por analista • 2026-04-10 09:00</span></div><button class="btn btn-outline">Ver</button></div>
+                </div>
+              </div>
+
+              <div class="details-grid">
+                <div class="detail-item"><span>Nombre completo</span><strong>Ana María Pérez</strong></div>
+                <div class="detail-item"><span>Cédula</span><strong>0912345678</strong></div>
+                <div class="detail-item"><span>Correo</span><strong>ana.perez@correo.com</strong></div>
+                <div class="detail-item"><span>Teléfono celular</span><strong>0999999999</strong></div>
+                <div class="detail-item"><span>Estado civil</span><strong>Casado(a)</strong></div>
+                <div class="detail-item"><span>Nacionalidad</span><strong>CR (Costa Rica)</strong></div>
+                <div class="detail-item"><span>Provincia</span><strong>01 SAN JOSÉ</strong></div>
+                <div class="detail-item"><span>Cantón</span><strong>Central</strong></div>
+                <div class="detail-item"><span>Distrito</span><strong>Carmen</strong></div>
+                <div class="detail-item"><span>Tipo dirección</span><strong>Residencial</strong></div>
+                <div class="detail-item"><span>Punto referencia</span><strong>Entrada principal de la iglesia</strong></div>
+                <div class="detail-item"><span>Distancia</span><strong>100 metros norte</strong></div>
+                <div class="detail-item"><span>Punto llegada</span><strong>Casa a mano derecha</strong></div>
+                <div class="detail-item"><span>Requiere CICAC</span><strong>Sí</strong></div>
+                <div class="detail-item"><span>Tipo de trabajo</span><strong>Asalariado</strong></div>
+                <div class="detail-item"><span>Patrono</span><strong>Empresa ABC</strong></div>
+                <div class="detail-item"><span>Salario bruto</span><strong>1,250,000.00</strong></div>
+                <div class="detail-item"><span>Cuota capital social</span><strong>1,875,000.00</strong></div>
+                <div class="detail-item"><span>PEP</span><strong>No</strong></div>
+                <div class="detail-item"><span>Residencia fiscal exterior</span><strong>No</strong></div>
+                <div class="detail-item"><span>Beneficiario principal</span><strong>María Pérez - 100%</strong></div>
+                <div class="detail-item"><span>Estado RPA</span><strong>Ingresado en SolinBanca</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-envio" class="page">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Enviar solicitud de actualización de datos</h1>
+            <p class="page-desc">Vista simple para enviar el enlace del formulario de actualización a un afiliado.</p>
+          </div>
+        </div>
+
+        <div class="send-layout">
+          <div class="card send-card">
+            <h3 style="margin-top:0; color:#0f172a;">Nuevo envío</h3>
+            <p>Ingrese los datos del afiliado. El sistema enviará el enlace al formulario de actualización de datos.</p>
+            <div class="stack">
+		<div class="field">
+                <label>Cedula afiliado</label>
+                <div style="display:flex; gap:10px; align-items:center;">
+                  <input id="cedulaAfiliado" type="text" placeholder="0000000000" />
+                  <button class="btn btn-outline" type="button">Buscar</button>
+                </div>
+              </div>
+		<div class="field">
+                <label>Nombre afiliado</label>
+                <input id="nombreAfiliado" type="text" placeholder="Juan Lopez" />
+              </div>
+
+              <div class="field">
+                <label>Correo del afiliado</label>
+                <input id="correoAfiliado" type="email" placeholder="afiliado@correo.com" />
+              </div>
+              <div class="field">
+                <label>Asunto del correo</label>
+                <input id="asuntoCorreo" type="text" value="Actualización de información del asociado" />
+              </div>
+              <div class="helper">El sistema puede generar un enlace único y seguro para cada afiliado.</div>
+              <button class="btn btn-primary">Enviar solicitud</button>
+            </div>
+          </div>
+
+          <div class="card send-card">
+            <h3 style="margin-top:0; color:#0f172a;">Vista previa del mensaje</h3>
+            <div class="mail-preview">
+              <h4 id="previewAsunto">Actualización de información del asociado</h4>
+              <p>Estimado(a) <strong id="previewNombre">[Nombre del cliente]</strong>,</p>
+              <p>Le invitamos a completar y validar su información mediante el formulario de actualización de datos.</p>
+              <p><strong>Cédula:</strong> <span id="previewCedula">[Cédula]</span></p>
+              <p><strong>Acción:</strong> Ingrese al enlace enviado y complete su información.</p>
+              <button class="btn btn-primary" type="button">Copiar enlace asociado</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    function showPage(pageId, btn) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function showDetail() {
+      document.getElementById('detailView').classList.remove('hidden');
+      document.getElementById('detailView').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function hideDetail() {
+      document.getElementById('detailView').classList.add('hidden');
+    }
+
+    function toggleExpediente() {
+      const panel = document.getElementById('expedientePanel');
+      panel.style.display = panel.style.display === 'none' || panel.style.display === '' ? 'block' : 'none';
+    }
+
+    function syncMailPreview() {
+      const nombre = document.getElementById('nombreAfiliado');
+      const cedula = document.getElementById('cedulaAfiliado');
+      const asunto = document.getElementById('asuntoCorreo');
+      const previewNombre = document.getElementById('previewNombre');
+      const previewCedula = document.getElementById('previewCedula');
+      const previewAsunto = document.getElementById('previewAsunto');
+      if (previewNombre) previewNombre.textContent = nombre && nombre.value.trim() ? nombre.value.trim() : '[Nombre del cliente]';
+      if (previewCedula) previewCedula.textContent = cedula && cedula.value.trim() ? cedula.value.trim() : '[Cédula]';
+      if (previewAsunto) previewAsunto.textContent = asunto && asunto.value.trim() ? asunto.value.trim() : 'Actualización de información del asociado';
+    }
+
+    ['nombreAfiliado', 'cedulaAfiliado', 'asuntoCorreo'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', syncMailPreview);
+    });
+
+    syncMailPreview();
+  </script>
+</body>
+</html>
