@@ -344,7 +344,7 @@
       <div class="brand">Solicitudes</div>
       <div class="brand-sub">Administración de afiliación y actualización</div>
       <button class="nav-btn active" onclick="showPage('page-admin', this)">Administración de solicitudes</button>
-      <button class="nav-btn" onclick="showPage('page-envio', this)">Enviar solicitud a afiliado</button>
+      <button id="btn-envio" class="nav-btn" onclick="showPage('page-envio', this)">Enviar solicitud a afiliado</button>
 		</br>
 		 <a 
   href="https://karlacm0070.github.io/plantillas-a2c/Vista_COOPEANDE_Creacion_solicitud_actualizada.html" 
@@ -623,7 +623,17 @@
       </section>
     </main>
   </div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  if (window.location.hash === "#page-envio") {
+    const btnEnvio = document.getElementById("btn-envio");
 
+    if (btnEnvio) {
+      showPage("page-envio", btnEnvio);
+    }
+  }
+});
+</script>
   <script>
     function showPage(pageId, btn) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
