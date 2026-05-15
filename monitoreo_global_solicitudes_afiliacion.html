@@ -39,6 +39,7 @@
       position: sticky;
       top: 0;
       height: 100vh;
+      overflow-y: auto;
     }
     .brand {
       font-size: 22px;
@@ -63,11 +64,20 @@
       color: white;
       font-weight: 700;
       transition: .2s ease;
+      display: block;
+      text-decoration: none;
+      font-family: inherit;
+      font-size: 14px;
     }
     .nav-btn.active,
     .nav-btn:hover { background: rgba(255,255,255,0.22); }
+    .new-request-btn {
+      margin-top: 22px;
+      margin-bottom: 24px;
+      background: rgba(255,255,255,0.2);
+    }
     .sidebar-note {
-      margin-top: 26px;
+      margin-top: 8px;
       padding: 16px;
       border-radius: 16px;
       background: rgba(255,255,255,0.12);
@@ -120,6 +130,11 @@
       font-weight: 800;
       transition: .2s ease;
       white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      font-family: inherit;
     }
     .btn-primary { background: linear-gradient(90deg, #2563eb, var(--primary)); color: white; }
     .btn-secondary { background: #e5e7eb; color: #374151; }
@@ -213,7 +228,7 @@
     .table-header h3 { margin: 0; font-size: 18px; color: #0f172a; }
     .table-subtitle { margin: 6px 0 0; color: #64748b; font-size: 13px; }
     .table-wrap { overflow: auto; }
-    table { width: 100%; border-collapse: collapse; min-width: 1820px; }
+    table { width: 100%; border-collapse: collapse; min-width: 1720px; }
     th, td {
       border-bottom: 1px solid #eef2f7;
       padding: 12px 14px;
@@ -320,6 +335,19 @@
     .doc-meta { display: flex; flex-direction: column; gap: 4px; }
     .doc-meta strong { font-size: 14px; color: #111827; }
     .doc-meta span { font-size: 12px; color: #6b7280; }
+    .upload-box {
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px dashed #bfdbfe;
+      border-radius: 14px;
+      background: #eff6ff;
+    }
+    .upload-inline {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
     .hidden { display: none !important; }
 
     .metrics-grid {
@@ -347,7 +375,7 @@
       width: 170px;
       height: 170px;
       border-radius: 50%;
-      background: conic-gradient(#15803d 0 54%, #f59e0b 54% 73%, #ef4444 73% 84%, #2563eb 84% 100%);
+      background: conic-gradient(#15803d 0 44%, #2563eb 44% 66%, #f59e0b 66% 84%, #ef4444 84% 100%);
       position: relative;
       margin: auto;
     }
@@ -379,19 +407,31 @@
     .c-yellow { background: #f59e0b; }
     .c-red { background: #ef4444; }
     .c-blue { background: #2563eb; }
-    .send-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-    .send-card { padding: 22px; }
-    .send-card p { margin-top: 0; color: #6b7280; font-size: 14px; line-height: 1.7; }
+
+    .send-layout, .validation-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .send-card, .validation-card { padding: 22px; }
+    .send-card p, .validation-card p { margin-top: 0; color: #6b7280; font-size: 14px; line-height: 1.7; }
     .stack { display: grid; gap: 14px; }
-    .helper { font-size: 12px; color: #6b7280; }
-    .mail-preview {
+    .helper { font-size: 12px; color: #6b7280; line-height: 1.5; }
+    .mail-preview, .validation-preview {
       border: 1px dashed #cbd5e1;
       border-radius: 14px;
       background: #f8fafc;
       padding: 18px;
     }
-    .mail-preview h4 { margin: 0 0 10px; font-size: 16px; color: var(--primary); }
-    .mail-preview p { margin: 0 0 10px; font-size: 14px; color: #475569; line-height: 1.7; }
+    .mail-preview h4, .validation-preview h4 { margin: 0 0 10px; font-size: 16px; color: var(--primary); }
+    .mail-preview p, .validation-preview p { margin: 0 0 10px; font-size: 14px; color: #475569; line-height: 1.7; }
+    .result-box {
+      border-radius: 16px;
+      padding: 16px;
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .result-box.success { background: #f0fdf4; border-color: #bbf7d0; }
+    .result-box.warning { background: #fffbeb; border-color: #fde68a; }
     .summary-strip {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -408,11 +448,11 @@
       .sidebar { height: auto; position: static; }
       .toolbar { grid-template-columns: 1fr 1fr; }
       .stat-grid, .summary-strip { grid-template-columns: 1fr 1fr; }
-      .detail-layout, .send-layout, .metrics-grid { grid-template-columns: 1fr; }
+      .detail-layout, .send-layout, .validation-layout, .metrics-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 768px) {
       .main { padding: 16px; }
-      .toolbar, .stat-grid, .summary-strip, .details-grid, .donut-wrap { grid-template-columns: 1fr; }
+      .toolbar, .stat-grid, .summary-strip, .details-grid, .donut-wrap, .upload-inline { grid-template-columns: 1fr; }
       .page-title { font-size: 24px; }
       .top-actions { width: 100%; }
       .btn { width: 100%; }
@@ -427,14 +467,14 @@
       <button class="nav-btn active" onclick="showPage('page-admin', this)">Administración global</button>
       <button class="nav-btn" onclick="showPage('page-metricas', this)">Métricas básicas</button>
       <button class="nav-btn" onclick="showPage('page-envio', this)">Enviar solicitud a afiliado</button>
-      </br>
-      <a 
-  href="https://karlacm0070.github.io/plantillas-a2c/Vista_COOPEANDE_Creacion_solicitud_actualizada.html" 
-  target="_blank" 
-  class="nav-btn"
->
-  + Nueva Solicitud
-</a>
+      <button class="nav-btn" onclick="showPage('page-validacion', this)">Validar documentos firmados</button>
+      <a
+        href="https://karlacm0070.github.io/plantillas-a2c/Vista_COOPEANDE_Creacion_solicitud_actualizada.html"
+        target="_blank"
+        class="nav-btn new-request-btn"
+      >
+        + Nueva Solicitud
+      </a>
       <div class="sidebar-note">
         Vista diseñada para supervisores o administradores de la cooperativa. Permite monitorear solicitudes generadas por todos los ejecutivos, revisar estados y exportar información operativa.
       </div>
@@ -445,10 +485,7 @@
         <div class="page-header">
           <div>
             <h1 class="page-title">Administración global de solicitudes</h1>
-            <p class="page-desc">Monitoree todas las solicitudes generadas por los ejecutivos, filtre por estado, ejecutivo, canal o fecha, revise el expediente digital y exporte el detalle para seguimiento operativo.</p>
-          </div>
-          <div class="top-actions">
-          
+            <p class="page-desc">Monitoree todas las solicitudes generadas por los ejecutivos, filtre por origen, validación documental, Estado RPA o fecha, revise el expediente digital y exporte el detalle para seguimiento operativo.</p>
           </div>
         </div>
 
@@ -492,37 +529,34 @@
             </select>
           </div>
           <div class="card filter-card field">
-            <label>Canal / origen</label>
+            <label>Origen</label>
             <select id="originFilter" onchange="filterTable()">
               <option value="">Todos</option>
               <option>Interna</option>
-              <option>Enlace afiliado</option>
-          
+              <option>Asociado</option>
             </select>
           </div>
           <div class="card filter-card field">
-            <label>Estado general</label>
-            <select id="statusFilter" onchange="filterTable()">
+            <label>Estado validación documental</label>
+            <select id="documentFilter" onchange="filterTable()">
               <option value="">Todos</option>
-              <option>Pendiente afiliado</option>
-              <option>Validación documental</option>
-              <option>Revisión manual</option>
-              <option>Documentos para firma</option>
-              <option>Finalizada</option>
+              <option>Completa</option>
+              <option>Pendiente</option>
+              <option>Con novedades</option>
             </select>
           </div>
           <div class="card filter-card field">
-            <label>Prioridad</label>
-            <select id="priorityFilter" onchange="filterTable()">
-              <option value="">Todas</option>
-              <option>Alta</option>
-              <option>Media</option>
-              <option>Baja</option>
+            <label>Estado RPA</label>
+            <select id="rpaFilter" onchange="filterTable()">
+              <option value="">Todos</option>
+              <option>Ingresado en SolinBanca</option>
+              <option>Documentos validados</option>
+              <option>Documentos pendientes</option>
+              <option>Documentos generados para firma</option>
+              <option>Revisión manual</option>
             </select>
           </div>
         </div>
-
-       
 
         <div class="card table-card">
           <div class="table-header">
@@ -544,17 +578,15 @@
                   <th>Agencia / Sucursal</th>
                   <th>Afiliado</th>
                   <th>Cédula</th>
-                  <th>Tipo solicitud</th>
-                  <th>Canal / origen</th>
+                  <th>Tipo de afiliación</th>
+                  <th>Origen</th>
                   <th>Fecha creación</th>
                   <th>Fecha envío afiliado</th>
                   <th>Última actualización</th>
-                  <th>Estado general</th>
-                  <th>Estado RPA</th>
                   <th>Validación documental</th>
-                  <th>Firma</th>
+                  <th>Estado RPA</th>
+                  <th>Validación de firma</th>
                   <th>SLA</th>
-                  
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -565,18 +597,16 @@
                   <td>Agencia Central</td>
                   <td>Ana María Pérez</td>
                   <td>0912345678</td>
-                  <td>Condicionada</td>
-                  <td><span class="badge badge-blue">Enlace afiliado</span></td>
+                  <td>Afiliado - activo - NO condicionado</td>
+                  <td><span class="badge badge-blue">Asociado</span></td>
                   <td>2026-05-08 09:14</td>
                   <td>2026-05-08 09:18</td>
                   <td>2026-05-10 11:22</td>
-                  <td><span class="badge badge-green">Finalizada</span></td>
-                  <td><span class="badge badge-green">Ingresado en SolinBanca</span></td>
                   <td><span class="badge badge-green">Completa</span></td>
+                  <td><span class="badge badge-green">Ingresado en SolinBanca</span></td>
                   <td><span class="badge badge-green">Completada</span></td>
                   <td><span class="badge badge-green">En tiempo</span></td>
-                  
-                  <td><div class="action-stack"><button class="btn btn-primary" onclick="showDetail('SOL-0101','Ana María Pérez','María Fernanda López','Finalizada')">Ver detalle</button></div></td>
+                  <td><div class="action-stack"><button class="btn btn-primary" onclick="showDetail('SOL-0101','Ana María Pérez','0912345678','María Fernanda López','Completa','Ingresado en SolinBanca','Completada','Asociado','Afiliado - activo - NO condicionado')">Ver detalle</button></div></td>
                 </tr>
                 <tr class="row-alert">
                   <td><strong>SOL-0102</strong></td>
@@ -584,18 +614,16 @@
                   <td>Agencia Norte</td>
                   <td>Carlos Villalobos</td>
                   <td>0102030405</td>
-                  <td>NO Condicionada</td>
-                  <td><span class="badge badge-blue">Enlace afiliado</span></td>
+                  <td>Prospecto - condicionado</td>
+                  <td><span class="badge badge-blue">Asociado</span></td>
                   <td>2026-05-07 15:42</td>
                   <td>2026-05-07 15:50</td>
                   <td>2026-05-09 08:10</td>
-                  <td><span class="badge badge-red">Pendiente afiliado</span></td>
-                  <td><span class="badge badge-yellow">Documentos pendientes</span></td>
                   <td><span class="badge badge-yellow">Pendiente</span></td>
+                  <td><span class="badge badge-yellow">Documentos pendientes</span></td>
                   <td><span class="badge badge-gray">No aplica</span></td>
                   <td><span class="badge badge-red">Vencido</span></td>
-                 
-                  <td><div class="action-stack"><button class="btn btn-primary" onclick="showDetail('SOL-0102','Carlos Villalobos','Diego Paredes','Pendiente afiliado')">Ver detalle</button></div></td>
+                  <td><div class="action-stack"><button class="btn btn-primary" onclick="showDetail('SOL-0102','Carlos Villalobos','0102030405','Diego Paredes','Pendiente','Documentos pendientes','No aplica','Asociado','Prospecto - condicionado')">Ver detalle</button></div></td>
                 </tr>
                 <tr class="row-warning">
                   <td><strong>SOL-0103</strong></td>
@@ -603,18 +631,16 @@
                   <td>Agencia Sur</td>
                   <td>Luisa Gómez</td>
                   <td>0911223344</td>
-                  <td>Condicionada</td>
-                  <td><span class="badge badge-blue">Enlace afiliado</span></td>
+                  <td>Prospecto - condicionado</td>
+                  <td><span class="badge badge-blue">Asociado</span></td>
                   <td>2026-05-08 11:10</td>
                   <td>2026-05-08 11:12</td>
                   <td>2026-05-10 16:33</td>
-                  <td><span class="badge badge-yellow">Revisión manual</span></td>
-                  <td><span class="badge badge-red">Error de validación</span></td>
                   <td><span class="badge badge-yellow">Con novedades</span></td>
+                  <td><span class="badge badge-red">Revisión manual</span></td>
                   <td><span class="badge badge-yellow">Novedades</span></td>
                   <td><span class="badge badge-yellow">Por vencer</span></td>
-                  
-                  <td><div class="action-stack"><button class="btn btn-primary" onclick="showDetail('SOL-0103','Luisa Gómez','Andrea Molina','Revisión manual')">Ver detalle</button></div></td>
+                  <td><div class="action-stack"><button class="btn btn-primary" onclick="showDetail('SOL-0103','Luisa Gómez','0911223344','Andrea Molina','Con novedades','Revisión manual','Novedades','Asociado','Prospecto - condicionado')">Ver detalle</button></div></td>
                 </tr>
                 <tr>
                   <td><strong>SOL-0104</strong></td>
@@ -622,18 +648,16 @@
                   <td>Agencia Este</td>
                   <td>Marvin Rojas</td>
                   <td>0708091011</td>
-                  <td>NO Condicionada</td>
+                  <td>Afiliado - activo - NO condicionado</td>
                   <td><span class="badge badge-gray">Interna</span></td>
                   <td>2026-05-09 08:00</td>
                   <td>-</td>
                   <td>2026-05-09 12:45</td>
-                  <td><span class="badge badge-blue">Documentos para firma</span></td>
-                  <td><span class="badge badge-green">Documentos generados</span></td>
                   <td><span class="badge badge-green">Completa</span></td>
+                  <td><span class="badge badge-green">Documentos generados para firma</span></td>
                   <td><span class="badge badge-gray">Pendiente</span></td>
                   <td><span class="badge badge-green">En tiempo</span></td>
-                  
-                  <td><div class="action-stack"><button class="btn btn-primary" onclick="showDetail('SOL-0104','Marvin Rojas','José Ramírez','Documentos para firma')">Ver detalle</button></div></td>
+                  <td><div class="action-stack"><button class="btn btn-primary" onclick="showDetail('SOL-0104','Marvin Rojas','0708091011','José Ramírez','Completa','Documentos generados para firma','Pendiente','Interna','Afiliado - activo - NO condicionado')">Ver detalle</button></div></td>
                 </tr>
                 <tr>
                   <td><strong>SOL-0105</strong></td>
@@ -641,18 +665,16 @@
                   <td>Agencia Oeste</td>
                   <td>Fernanda Mora</td>
                   <td>0405060708</td>
-                  <td>Condicionada</td>
-                  <td><span class="badge badge-blue">Enlace afiliado</span></td>
+                  <td>Prospecto - condicionado</td>
+                  <td><span class="badge badge-blue">Asociado</span></td>
                   <td>2026-05-10 10:20</td>
                   <td>2026-05-10 10:25</td>
                   <td>2026-05-10 15:41</td>
-                  <td><span class="badge badge-blue">Validación documental</span></td>
-                  <td><span class="badge badge-blue">En proceso</span></td>
                   <td><span class="badge badge-green">Completa</span></td>
+                  <td><span class="badge badge-blue">Documentos validados</span></td>
                   <td><span class="badge badge-gray">No aplica</span></td>
                   <td><span class="badge badge-green">En tiempo</span></td>
-                  
-                  <td><div class="action-stack"><button class="btn btn-primary" onclick="showDetail('SOL-0105','Fernanda Mora','Gabriela Castro','Validación documental')">Ver detalle</button></div></td>
+                  <td><div class="action-stack"><button class="btn btn-primary" onclick="showDetail('SOL-0105','Fernanda Mora','0405060708','Gabriela Castro','Completa','Documentos validados','No aplica','Asociado','Prospecto - condicionado')">Ver detalle</button></div></td>
                 </tr>
                 <tr>
                   <td><strong>SOL-0106</strong></td>
@@ -660,18 +682,16 @@
                   <td>Agencia Central</td>
                   <td>Roberto Hidalgo</td>
                   <td>0203040506</td>
-                  <td>NO Condicionada</td>
+                  <td>Afiliado - activo - NO condicionado</td>
                   <td><span class="badge badge-gray">Interna</span></td>
                   <td>2026-05-10 12:05</td>
                   <td>-</td>
                   <td>2026-05-10 13:12</td>
-                  <td><span class="badge badge-blue">Validación documental</span></td>
-                  <td><span class="badge badge-blue">Documentos validados</span></td>
                   <td><span class="badge badge-green">Completa</span></td>
+                  <td><span class="badge badge-blue">Documentos validados</span></td>
                   <td><span class="badge badge-gray">Pendiente</span></td>
                   <td><span class="badge badge-green">En tiempo</span></td>
-                  
-                  <td><div class="action-stack"><button class="btn btn-primary" onclick="showDetail('SOL-0106','Roberto Hidalgo','María Fernanda López','Validación documental')">Ver detalle</button></div></td>
+                  <td><div class="action-stack"><button class="btn btn-primary" onclick="showDetail('SOL-0106','Roberto Hidalgo','0203040506','María Fernanda López','Completa','Documentos validados','Pendiente','Interna','Afiliado - activo - NO condicionado')">Ver detalle</button></div></td>
                 </tr>
                 <tr class="row-alert">
                   <td><strong>SOL-0107</strong></td>
@@ -679,18 +699,16 @@
                   <td>Agencia Norte</td>
                   <td>Patricia Jiménez</td>
                   <td>0304050607</td>
-                  <td>Condicionada</td>
-                  <td><span class="badge badge-blue">Enlace afiliado</span></td>
+                  <td>Prospecto - condicionado</td>
+                  <td><span class="badge badge-blue">Asociado</span></td>
                   <td>2026-05-06 09:30</td>
                   <td>2026-05-06 09:35</td>
                   <td>2026-05-06 09:35</td>
-                  <td><span class="badge badge-red">Pendiente afiliado</span></td>
-                  <td><span class="badge badge-yellow">Esperando documentos</span></td>
-                  <td><span class="badge badge-red">Sin respuesta</span></td>
+                  <td><span class="badge badge-yellow">Pendiente</span></td>
+                  <td><span class="badge badge-yellow">Documentos pendientes</span></td>
                   <td><span class="badge badge-gray">No aplica</span></td>
                   <td><span class="badge badge-red">Vencido</span></td>
-                 
-                  <td><div class="action-stack"><button class="btn btn-primary" onclick="showDetail('SOL-0107','Patricia Jiménez','Diego Paredes','Pendiente afiliado')">Ver detalle</button></div></td>
+                  <td><div class="action-stack"><button class="btn btn-primary" onclick="showDetail('SOL-0107','Patricia Jiménez','0304050607','Diego Paredes','Pendiente','Documentos pendientes','No aplica','Asociado','Prospecto - condicionado')">Ver detalle</button></div></td>
                 </tr>
               </tbody>
             </table>
@@ -705,9 +723,8 @@
                 <div class="action-stack">
                   <button class="btn btn-outline" onclick="toggleExpediente()">Ver expediente digital</button>
                   <button class="btn btn-outline">Descargar documentos para firma</button>
-                  <button class="btn btn-success">Cargar documentos firmados</button>
                   <button class="btn btn-secondary">Reasignar ejecutivo</button>
-                  <button class="btn btn-primary">Editar información</button>
+                  <a class="btn btn-primary" href="https://karlacm0070.github.io/plantillas-a2c/Vista_COOPEANDE_Creacion_solicitud_actualizada.html" target="_blank">Editar información de afiliado</a>
                   <button class="btn btn-secondary" onclick="hideDetail()">Cerrar</button>
                 </div>
               </div>
@@ -715,37 +732,45 @@
               <div id="expedientePanel" class="card" style="padding:16px; margin-bottom:16px; display:none; background:#f8fafc; box-shadow:none;">
                 <div class="section-title"><h3>Expediente digital</h3></div>
                 <div class="doc-list">
-                  <div class="doc-item"><div class="doc-meta"><strong>Cédula.pdf</strong><span>Cargado por afiliado · 2026-05-09 14:31</span></div><button class="btn btn-outline">Ver</button></div>
-                  <div class="doc-item"><div class="doc-meta"><strong>Sicere.pdf</strong><span>Cargado por afiliado · 2026-05-09 14:31</span></div><button class="btn btn-outline">Ver</button></div>
-                  <div class="doc-item"><div class="doc-meta"><strong>Formulario_actualizacion.pdf</strong><span>Generado por sistema · 2026-05-09 15:10</span></div><button class="btn btn-outline">Ver</button></div>
-                  <div class="doc-item"><div class="doc-meta"><strong>Contrato_firmado.pdf</strong><span>Cargado por ejecutivo · pendiente</span></div><button class="btn btn-outline">Ver</button></div>
+                  <div class="doc-item"><div class="doc-meta"><strong>Cédula.pdf</strong><span>Cargado por afiliado · 2026-05-09 14:31</span></div><button class="btn btn-outline">Descargar</button></div>
+                  <div class="doc-item"><div class="doc-meta"><strong>Sicere.pdf</strong><span>Cargado por afiliado · 2026-05-09 14:31</span></div><button class="btn btn-outline">Descargar</button></div>
+                  <div class="doc-item"><div class="doc-meta"><strong>Formulario_actualizacion.pdf</strong><span>Generado por sistema · 2026-05-09 15:10</span></div><button class="btn btn-outline">Descargar</button></div>
+                  <div class="doc-item"><div class="doc-meta"><strong>Contrato_firmado.pdf</strong><span>Cargado desde validación de documentos firmados · pendiente</span></div><button class="btn btn-outline">Descargar</button></div>
+                </div>
+                <div class="upload-box">
+                  <div class="upload-inline">
+                    <div class="field">
+                      <label>Cargar documento adicional</label>
+                      <input type="file" accept=".pdf,.png,.jpg,.jpeg" />
+                    </div>
+                    <button class="btn btn-success" type="button">Cargar al expediente</button>
+                  </div>
+                  <div class="helper" style="margin-top:8px;">Permite anexar documentos complementarios sin cargar documentos firmados desde el detalle de una solicitud.</div>
                 </div>
               </div>
 
               <div class="details-grid">
                 <div class="detail-item"><span>ID solicitud</span><strong id="detalleId">SOL-0101</strong></div>
-                <div class="detail-item"><span>Estado general</span><strong id="detalleEstado">Finalizada</strong></div>
+                <div class="detail-item"><span>Origen</span><strong id="detalleOrigen">Asociado</strong></div>
                 <div class="detail-item"><span>Nombre completo</span><strong id="detalleNombre">Ana María Pérez</strong></div>
+                <div class="detail-item"><span>Cédula</span><strong id="detalleCedula">0912345678</strong></div>
                 <div class="detail-item"><span>Ejecutivo responsable</span><strong id="detalleEjecutivo">María Fernanda López</strong></div>
-                <div class="detail-item"><span>Cédula</span><strong>0912345678</strong></div>
-                <div class="detail-item"><span>Enlace afiliado</span><strong>afiliado@Enlace afiliado.com</strong></div>
+                <div class="detail-item"><span>Tipo de afiliación</span><strong id="detalleTipo">Afiliado - activo - NO condicionado</strong></div>
+                <div class="detail-item"><span>Correo</span><strong>afiliado@correo.com</strong></div>
                 <div class="detail-item"><span>Teléfono celular</span><strong>0999999999</strong></div>
                 <div class="detail-item"><span>Agencia</span><strong>Agencia Central</strong></div>
-                <div class="detail-item"><span>Tipo de cliente</span><strong>Asociado</strong></div>
-                <div class="detail-item"><span>Tipo de solicitud</span><strong>Condicionada</strong></div>
-                <div class="detail-item"><span>Canal de origen</span><strong>Enlace afiliado</strong></div>
                 <div class="detail-item"><span>Fecha de creación</span><strong>2026-05-08 09:14</strong></div>
                 <div class="detail-item"><span>Requiere CICAC</span><strong>Sí</strong></div>
-                <div class="detail-item"><span>Estado RPA</span><strong>Ingresado en SolinBanca</strong></div>
-                <div class="detail-item"><span>Validación documental</span><strong>Completa</strong></div>
-                <div class="detail-item"><span>Firma</span><strong>Pendiente de carga</strong></div>
+                <div class="detail-item"><span>Estado RPA</span><strong id="detalleRpa">Ingresado en SolinBanca</strong></div>
+                <div class="detail-item"><span>Validación documental</span><strong id="detalleDoc">Completa</strong></div>
+                <div class="detail-item"><span>Firma</span><strong id="detalleFirma">Completada</strong></div>
               </div>
             </div>
             <div class="card side-card">
               <div class="section-title"><h3>Historial de gestión</h3></div>
               <div class="timeline">
                 <div class="timeline-item"><div class="timeline-dot">1</div><div class="timeline-box"><strong>Solicitud creada</strong><span>Ejecutivo responsable registró la solicitud.</span></div></div>
-                <div class="timeline-item"><div class="timeline-dot">2</div><div class="timeline-box"><strong>Enlace enviado al afiliado</strong><span>Enlace afiliado enviado con formulario de actualización.</span></div></div>
+                <div class="timeline-item"><div class="timeline-dot">2</div><div class="timeline-box"><strong>Enlace enviado al afiliado</strong><span>Solicitud enviada para completar o validar información.</span></div></div>
                 <div class="timeline-item"><div class="timeline-dot">3</div><div class="timeline-box"><strong>Documentos recibidos</strong><span>Afiliado completó carga documental.</span></div></div>
                 <div class="timeline-item"><div class="timeline-dot">4</div><div class="timeline-box"><strong>RPA en ejecución</strong><span>Validación y registro en sistema core.</span></div></div>
               </div>
@@ -761,7 +786,7 @@
             <p class="page-desc">Indicadores para revisar carga operativa, estados del proceso, cumplimiento de SLA y productividad por ejecutivo.</p>
           </div>
           <div class="top-actions">
-            <button class="btn btn-primary" type="button">+ Nuevo</button>
+            <a class="btn btn-primary" href="https://karlacm0070.github.io/plantillas-a2c/Vista_COOPEANDE_Creacion_solicitud_actualizada.html" target="_blank">+ Nuevo</a>
             <button class="btn btn-outline" onclick="showPageById('page-admin')">Ir a administración</button>
           </div>
         </div>
@@ -775,14 +800,14 @@
 
         <div class="metrics-grid">
           <div class="card metric-card">
-            <h3>Solicitudes por estado</h3>
+            <h3>Solicitudes por Estado RPA</h3>
             <div class="donut-wrap">
               <div class="donut"><div class="donut-center">248<small>Total</small></div></div>
               <div class="legend">
-                <div class="legend-item"><div class="legend-left"><span class="legend-color c-green"></span>Finalizadas</div><strong>156</strong></div>
-                <div class="legend-item"><div class="legend-left"><span class="legend-color c-yellow"></span>En revisión manual</div><strong>18</strong></div>
-                <div class="legend-item"><div class="legend-left"><span class="legend-color c-red"></span>Pendientes afiliado</div><strong>37</strong></div>
-                <div class="legend-item"><div class="legend-left"><span class="legend-color c-blue"></span>Validación / firma</div><strong>37</strong></div>
+                <div class="legend-item"><div class="legend-left"><span class="legend-color c-green"></span>Ingresado en SolinBanca</div><strong>109</strong></div>
+                <div class="legend-item"><div class="legend-left"><span class="legend-color c-blue"></span>Documentos validados</div><strong>54</strong></div>
+                <div class="legend-item"><div class="legend-left"><span class="legend-color c-yellow"></span>Documentos pendientes</div><strong>45</strong></div>
+                <div class="legend-item"><div class="legend-left"><span class="legend-color c-red"></span>Revisión manual</div><strong>40</strong></div>
               </div>
             </div>
           </div>
@@ -799,13 +824,11 @@
           </div>
 
           <div class="card metric-card">
-            <h3>Cumplimiento de SLA por agencia</h3>
+            <h3>Estado validación documental</h3>
             <div class="chart-row">
-              <div class="bar-item"><div class="bar-top"><span>Agencia Central</span><strong>94%</strong></div><div class="bar-track"><div class="bar-fill green" style="width:94%"></div></div></div>
-              <div class="bar-item"><div class="bar-top"><span>Agencia Este</span><strong>91%</strong></div><div class="bar-track"><div class="bar-fill green" style="width:91%"></div></div></div>
-              <div class="bar-item"><div class="bar-top"><span>Agencia Oeste</span><strong>87%</strong></div><div class="bar-track"><div class="bar-fill" style="width:87%"></div></div></div>
-              <div class="bar-item"><div class="bar-top"><span>Agencia Sur</span><strong>82%</strong></div><div class="bar-track"><div class="bar-fill yellow" style="width:82%"></div></div></div>
-              <div class="bar-item"><div class="bar-top"><span>Agencia Norte</span><strong>74%</strong></div><div class="bar-track"><div class="bar-fill red" style="width:74%"></div></div></div>
+              <div class="bar-item"><div class="bar-top"><span>Completa</span><strong>178</strong></div><div class="bar-track"><div class="bar-fill green" style="width:92%"></div></div></div>
+              <div class="bar-item"><div class="bar-top"><span>Pendiente</span><strong>49</strong></div><div class="bar-track"><div class="bar-fill yellow" style="width:45%"></div></div></div>
+              <div class="bar-item"><div class="bar-top"><span>Con novedades</span><strong>21</strong></div><div class="bar-track"><div class="bar-fill red" style="width:22%"></div></div></div>
             </div>
           </div>
 
@@ -815,13 +838,13 @@
               <div class="bar-item"><div class="bar-top"><span>Afiliado sin respuesta</span><strong>37</strong></div><div class="bar-track"><div class="bar-fill red" style="width:90%"></div></div></div>
               <div class="bar-item"><div class="bar-top"><span>Documentos con novedad</span><strong>21</strong></div><div class="bar-track"><div class="bar-fill yellow" style="width:58%"></div></div></div>
               <div class="bar-item"><div class="bar-top"><span>Firma pendiente</span><strong>19</strong></div><div class="bar-track"><div class="bar-fill yellow" style="width:52%"></div></div></div>
-              <div class="bar-item"><div class="bar-top"><span>Error de validación RPA</span><strong>11</strong></div><div class="bar-track"><div class="bar-fill red" style="width:38%"></div></div></div>
+              <div class="bar-item"><div class="bar-top"><span>Revisión manual por RPA</span><strong>11</strong></div><div class="bar-track"><div class="bar-fill red" style="width:38%"></div></div></div>
               <div class="bar-item"><div class="bar-top"><span>Reasignación requerida</span><strong>6</strong></div><div class="bar-track"><div class="bar-fill" style="width:22%"></div></div></div>
             </div>
             <div class="pill-list">
               <span class="badge badge-red">Priorizar pendientes afiliado</span>
               <span class="badge badge-yellow">Revisar agencia Norte</span>
-              <span class="badge badge-blue">Optimizar reintentos RPA</span>
+              <span class="badge badge-blue">Optimizar validaciones RPA</span>
             </div>
           </div>
         </div>
@@ -830,29 +853,33 @@
       <section id="page-envio" class="page">
         <div class="page-header">
           <div>
-            <h1 class="page-title">Enviar solicitud de Condicionada</h1>
-            <p class="page-desc">Módulo replicado para enviar el enlace del formulario de actualización a un afiliado desde la vista global.</p>
-          </div>
-          <div class="top-actions">
-           
+            <h1 class="page-title">Enviar solicitud a afiliado</h1>
+            <p class="page-desc">Módulo para enviar el enlace del formulario de afiliación o actualización desde la vista global.</p>
           </div>
         </div>
 
         <div class="send-layout">
           <div class="card send-card">
             <h3 style="margin-top:0; color:#0f172a;">Nuevo envío</h3>
-            <p>Ingrese los datos del afiliado. El sistema enviará el enlace al formulario de Condicionada.</p>
+            <p>Ingrese los datos del afiliado. El sistema enviará el enlace al formulario correspondiente según el tipo de afiliación seleccionado.</p>
             <div class="stack">
               <div class="field">
                 <label>Cédula afiliado</label>
                 <div style="display:flex; gap:10px; align-items:center;">
                   <input id="cedulaAfiliado" type="text" placeholder="0000000000" />
-                  <button class="btn btn-outline" type="button">Buscar</button>
+                  <button class="btn btn-outline" type="button" onclick="buscarAfiliadoEnvio()">Buscar</button>
                 </div>
               </div>
               <div class="field">
                 <label>Nombre afiliado</label>
                 <input id="nombreAfiliado" type="text" placeholder="Juan López" />
+              </div>
+              <div class="field">
+                <label>Tipo de afiliación</label>
+                <select id="tipoAfiliacion">
+                  <option>Afiliado - activo - NO condicionado</option>
+                  <option>Prospecto - condicionado</option>
+                </select>
               </div>
               <div class="field">
                 <label>Ejecutivo responsable</label>
@@ -865,16 +892,15 @@
                 </select>
               </div>
               <div class="field">
-                <label>Enlace afiliado del afiliado</label>
-                <input id="Enlace afiliadoAfiliado" type="email" placeholder="afiliado@Enlace afiliado.com" />
+                <label>Correo del afiliado</label>
+                <input id="correoAfiliado" type="email" placeholder="afiliado@correo.com" />
               </div>
               <div class="field">
-                <label>Asunto del Enlace afiliado</label>
-                <input id="asuntoEnlace afiliado" type="text" value="Actualización de información del asociado" />
+                <label>Asunto del correo</label>
+                <input id="asuntoCorreo" type="text" value="Actualización de información del asociado" />
               </div>
               <div class="helper">El sistema puede generar un enlace único y seguro para cada afiliado.</div>
-              <a  href="https://karlacm0070.github.io/plantillas-a2c/correo_envio_formulario_asociado_V2.html" 
-  target="_blank"  class="btn btn-primary">Enviar solicitud</a>
+              <a href="https://karlacm0070.github.io/plantillas-a2c/correo_envio_formulario_asociado_V2.html" target="_blank" class="btn btn-primary">Enviar solicitud</a>
             </div>
           </div>
 
@@ -883,11 +909,70 @@
             <div class="mail-preview">
               <h4 id="previewAsunto">Actualización de información del asociado</h4>
               <p>Estimado(a) <strong id="previewNombre">[Nombre del cliente]</strong>,</p>
-              <p>Le invitamos a completar y validar su información mediante el formulario de Condicionada.</p>
+              <p>Le invitamos a completar y validar su información mediante el formulario enviado.</p>
               <p><strong>Cédula:</strong> <span id="previewCedula">[Cédula]</span></p>
+              <p><strong>Tipo de afiliación:</strong> <span id="previewTipoAfiliacion">Afiliado - activo - NO condicionado</span></p>
               <p><strong>Ejecutivo responsable:</strong> <span id="previewEjecutivo">María Fernanda López</span></p>
               <p><strong>Acción:</strong> Ingrese al enlace enviado y complete su información.</p>
               <button class="btn btn-primary" type="button">Copiar enlace asociado</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-validacion" class="page">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Validar documentos firmados</h1>
+            <p class="page-desc">Formulario centralizado para cargar documentos firmados y comparar la firma contra la identificación escaneada previamente en el expediente del afiliado.</p>
+          </div>
+        </div>
+
+        <div class="validation-layout">
+          <div class="card validation-card">
+            <h3 style="margin-top:0; color:#0f172a;">Búsqueda y carga de documentos</h3>
+            <p>Ingrese la cédula o identificación del afiliado para precargar sus datos y seleccionar una solicitud activa.</p>
+            <div class="stack">
+              <div class="field">
+                <label>Cédula o identificación</label>
+                <div style="display:flex; gap:10px; align-items:center;">
+                  <input id="cedulaValidacion" type="text" placeholder="Ej. 0912345678" />
+                  <button class="btn btn-outline" type="button" onclick="buscarAfiliadoFirmados()">Buscar</button>
+                </div>
+              </div>
+              <div class="field">
+                <label>Nombre afiliado</label>
+                <input id="nombreValidacion" type="text" placeholder="Se precarga al buscar" readonly />
+              </div>
+              <div class="field">
+                <label>Solicitudes activas</label>
+                <select id="solicitudActiva">
+                  <option value="">Seleccione una solicitud activa</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Documentos firmados</label>
+                <input id="documentosFirmados" type="file" multiple accept=".pdf,.png,.jpg,.jpeg" />
+                <span class="helper">Puede adjuntar contrato firmado, formulario firmado u otros documentos habilitados para firma.</span>
+              </div>
+              <button class="btn btn-primary" type="button" onclick="validarFirmas()">Validar firma contra identificación</button>
+            </div>
+          </div>
+
+          <div class="card validation-card">
+            <h3 style="margin-top:0; color:#0f172a;">Resultado de validación</h3>
+            <div class="validation-preview">
+              <h4>Identificación base del expediente</h4>
+              <p><strong>Documento cargado previamente:</strong> Cédula.pdf</p>
+              <p><strong>Validación esperada:</strong> Firma del documento firmado vs. firma/imagen escaneada de la identificación del cliente.</p>
+              <p><strong>Afiliado:</strong> <span id="resumenAfiliado">[Pendiente de búsqueda]</span></p>
+              <p><strong>Solicitud:</strong> <span id="resumenSolicitud">[Pendiente de selección]</span></p>
+            </div>
+
+            <div id="resultadoFirma" class="result-box">
+              <span class="badge badge-gray">Pendiente de validación</span>
+              <strong>No se han cargado documentos firmados.</strong>
+              <span class="helper">Realice la búsqueda, seleccione una solicitud activa y adjunte los documentos firmados para visualizar el resultado.</span>
             </div>
           </div>
         </div>
@@ -896,6 +981,44 @@
   </div>
 
   <script>
+    const afiliadosDemo = {
+      '0912345678': {
+        nombre: 'Ana María Pérez',
+        correo: 'ana.perez@correo.com',
+        ejecutivo: 'María Fernanda López',
+        tipo: 'Afiliado - activo - NO condicionado',
+        solicitudes: ['SOL-0101 · Afiliación activa · Documentos generados para firma']
+      },
+      '0102030405': {
+        nombre: 'Carlos Villalobos',
+        correo: 'carlos.villalobos@correo.com',
+        ejecutivo: 'Diego Paredes',
+        tipo: 'Prospecto - condicionado',
+        solicitudes: ['SOL-0102 · Prospecto condicionado · Documentos pendientes']
+      },
+      '0911223344': {
+        nombre: 'Luisa Gómez',
+        correo: 'luisa.gomez@correo.com',
+        ejecutivo: 'Andrea Molina',
+        tipo: 'Prospecto - condicionado',
+        solicitudes: ['SOL-0103 · Prospecto condicionado · Revisión manual']
+      },
+      '0708091011': {
+        nombre: 'Marvin Rojas',
+        correo: 'marvin.rojas@correo.com',
+        ejecutivo: 'José Ramírez',
+        tipo: 'Afiliado - activo - NO condicionado',
+        solicitudes: ['SOL-0104 · Afiliación activa · Documentos generados para firma']
+      },
+      '0405060708': {
+        nombre: 'Fernanda Mora',
+        correo: 'fernanda.mora@correo.com',
+        ejecutivo: 'Gabriela Castro',
+        tipo: 'Prospecto - condicionado',
+        solicitudes: ['SOL-0105 · Prospecto condicionado · Documentos validados']
+      }
+    };
+
     function showPage(pageId, btn) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById(pageId).classList.add('active');
@@ -905,16 +1028,21 @@
     }
 
     function showPageById(pageId) {
-      const buttons = document.querySelectorAll('.nav-btn');
-      const map = { 'page-admin': 0, 'page-metricas': 1, 'page-envio': 2 };
+      const buttons = document.querySelectorAll('.sidebar .nav-btn');
+      const map = { 'page-admin': 0, 'page-metricas': 1, 'page-envio': 2, 'page-validacion': 3 };
       showPage(pageId, buttons[map[pageId]]);
     }
 
-    function showDetail(id, nombre, ejecutivo, estado) {
+    function showDetail(id, nombre, cedula, ejecutivo, estadoDoc, estadoRpa, firma, origen, tipo) {
       document.getElementById('detalleId').textContent = id || 'SOL-0101';
       document.getElementById('detalleNombre').textContent = nombre || 'Ana María Pérez';
+      document.getElementById('detalleCedula').textContent = cedula || '0912345678';
       document.getElementById('detalleEjecutivo').textContent = ejecutivo || 'María Fernanda López';
-      document.getElementById('detalleEstado').textContent = estado || 'Finalizada';
+      document.getElementById('detalleDoc').textContent = estadoDoc || 'Completa';
+      document.getElementById('detalleRpa').textContent = estadoRpa || 'Ingresado en SolinBanca';
+      document.getElementById('detalleFirma').textContent = firma || 'Completada';
+      document.getElementById('detalleOrigen').textContent = origen || 'Asociado';
+      document.getElementById('detalleTipo').textContent = tipo || 'Afiliado - activo - NO condicionado';
       document.getElementById('detailView').classList.remove('hidden');
       document.getElementById('detailView').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -932,12 +1060,16 @@
       return (value || '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
     }
 
+    function normalizeId(value) {
+      return (value || '').toString().replace(/\D/g, '');
+    }
+
     function filterTable() {
       const search = normalizeText(document.getElementById('searchInput').value);
       const executive = normalizeText(document.getElementById('executiveFilter').value);
       const origin = normalizeText(document.getElementById('originFilter').value);
-      const status = normalizeText(document.getElementById('statusFilter').value);
-      const priority = normalizeText(document.getElementById('priorityFilter').value);
+      const documentStatus = normalizeText(document.getElementById('documentFilter').value);
+      const rpaStatus = normalizeText(document.getElementById('rpaFilter').value);
       const rows = document.querySelectorAll('#solicitudesTable tbody tr');
 
       rows.forEach(row => {
@@ -945,22 +1077,22 @@
         const rowText = normalizeText(row.innerText);
         const rowExecutive = normalizeText(cells[1]?.innerText);
         const rowOrigin = normalizeText(cells[6]?.innerText);
-        const rowStatus = normalizeText(cells[10]?.innerText);
-        const rowPriority = normalizeText(cells[15]?.innerText);
+        const rowDocumentStatus = normalizeText(cells[10]?.innerText);
+        const rowRpaStatus = normalizeText(cells[11]?.innerText);
 
         const visible =
           (!search || rowText.includes(search)) &&
           (!executive || rowExecutive.includes(executive)) &&
           (!origin || rowOrigin.includes(origin)) &&
-          (!status || rowStatus.includes(status)) &&
-          (!priority || rowPriority.includes(priority));
+          (!documentStatus || rowDocumentStatus.includes(documentStatus)) &&
+          (!rpaStatus || rowRpaStatus.includes(rpaStatus));
 
         row.style.display = visible ? '' : 'none';
       });
     }
 
     function clearFilters() {
-      ['searchInput', 'executiveFilter', 'originFilter', 'statusFilter', 'priorityFilter'].forEach(id => {
+      ['searchInput', 'executiveFilter', 'originFilter', 'documentFilter', 'rpaFilter'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
       });
@@ -986,28 +1118,145 @@
       URL.revokeObjectURL(url);
     }
 
+    function buscarAfiliadoEnvio() {
+      const cedula = normalizeId(document.getElementById('cedulaAfiliado').value);
+      const data = afiliadosDemo[cedula];
+      if (!data) {
+        alert('No se encontró información precargada para esta identificación en la data demo.');
+        return;
+      }
+
+      document.getElementById('nombreAfiliado').value = data.nombre;
+      document.getElementById('correoAfiliado').value = data.correo;
+      document.getElementById('ejecutivoEnvio').value = data.ejecutivo;
+      document.getElementById('tipoAfiliacion').value = data.tipo;
+      syncMailPreview();
+    }
+
+    function buscarAfiliadoFirmados() {
+      const cedula = normalizeId(document.getElementById('cedulaValidacion').value);
+      const data = afiliadosDemo[cedula];
+      const nombreInput = document.getElementById('nombreValidacion');
+      const solicitudSelect = document.getElementById('solicitudActiva');
+      const resumenAfiliado = document.getElementById('resumenAfiliado');
+      const resumenSolicitud = document.getElementById('resumenSolicitud');
+
+      solicitudSelect.innerHTML = '<option value="">Seleccione una solicitud activa</option>';
+
+      if (!data) {
+        nombreInput.value = '';
+        resumenAfiliado.textContent = '[No encontrado]';
+        resumenSolicitud.textContent = '[Pendiente de selección]';
+        alert('No se encontró información precargada para esta identificación en la data demo.');
+        return;
+      }
+
+      nombreInput.value = data.nombre;
+      resumenAfiliado.textContent = data.nombre + ' · ' + cedula;
+
+      data.solicitudes.forEach((solicitud) => {
+        const option = document.createElement('option');
+        option.value = solicitud;
+        option.textContent = solicitud;
+        solicitudSelect.appendChild(option);
+      });
+
+      if (data.solicitudes.length === 1) {
+        solicitudSelect.selectedIndex = 1;
+        resumenSolicitud.textContent = solicitudSelect.value;
+      }
+
+      resetResultadoFirma('Afiliado encontrado. Adjunte los documentos firmados para iniciar la validación.');
+    }
+
+    function resetResultadoFirma(texto) {
+      const result = document.getElementById('resultadoFirma');
+      result.className = 'result-box';
+      result.innerHTML = `
+        <span class="badge badge-gray">Pendiente de validación</span>
+        <strong>${texto}</strong>
+        <span class="helper">La identificación base ya consta en el expediente digital del cliente.</span>
+      `;
+    }
+
+    function validarFirmas() {
+      const cedula = normalizeId(document.getElementById('cedulaValidacion').value);
+      const nombre = document.getElementById('nombreValidacion').value.trim();
+      const solicitud = document.getElementById('solicitudActiva').value;
+      const files = document.getElementById('documentosFirmados').files;
+      const result = document.getElementById('resultadoFirma');
+
+      if (!cedula || !nombre) {
+        alert('Primero busque la identificación del afiliado.');
+        return;
+      }
+
+      if (!solicitud) {
+        alert('Seleccione una solicitud activa.');
+        return;
+      }
+
+      if (!files || files.length === 0) {
+        alert('Adjunte al menos un documento firmado.');
+        return;
+      }
+
+      document.getElementById('resumenSolicitud').textContent = solicitud;
+
+      const requiereRevision = cedula === '0911223344';
+      if (requiereRevision) {
+        result.className = 'result-box warning';
+        result.innerHTML = `
+          <span class="badge badge-yellow">Revisión manual requerida</span>
+          <strong>La firma del documento no coincide completamente con la identificación escaneada.</strong>
+          <span class="helper">Afiliado: ${nombre}. Documentos cargados: ${files.length}. Se recomienda revisión del ejecutivo o validación documental adicional.</span>
+        `;
+      } else {
+        result.className = 'result-box success';
+        result.innerHTML = `
+          <span class="badge badge-green">Validación correcta</span>
+          <strong>La firma coincide con la identificación escaneada del cliente.</strong>
+          <span class="helper">Afiliado: ${nombre}. Documentos cargados: ${files.length}. Resultado listo para anexar al expediente digital.</span>
+        `;
+      }
+    }
+
     function syncMailPreview() {
       const nombre = document.getElementById('nombreAfiliado');
       const cedula = document.getElementById('cedulaAfiliado');
-      const asunto = document.getElementById('asuntoEnlace afiliado');
+      const asunto = document.getElementById('asuntoCorreo');
       const ejecutivo = document.getElementById('ejecutivoEnvio');
+      const tipo = document.getElementById('tipoAfiliacion');
       const previewNombre = document.getElementById('previewNombre');
       const previewCedula = document.getElementById('previewCedula');
       const previewAsunto = document.getElementById('previewAsunto');
       const previewEjecutivo = document.getElementById('previewEjecutivo');
+      const previewTipoAfiliacion = document.getElementById('previewTipoAfiliacion');
       if (previewNombre) previewNombre.textContent = nombre && nombre.value.trim() ? nombre.value.trim() : '[Nombre del cliente]';
       if (previewCedula) previewCedula.textContent = cedula && cedula.value.trim() ? cedula.value.trim() : '[Cédula]';
       if (previewAsunto) previewAsunto.textContent = asunto && asunto.value.trim() ? asunto.value.trim() : 'Actualización de información del asociado';
       if (previewEjecutivo) previewEjecutivo.textContent = ejecutivo && ejecutivo.value ? ejecutivo.value : 'María Fernanda López';
+      if (previewTipoAfiliacion) previewTipoAfiliacion.textContent = tipo && tipo.value ? tipo.value : 'Afiliado - activo - NO condicionado';
     }
 
-    ['nombreAfiliado', 'cedulaAfiliado', 'asuntoEnlace afiliado', 'ejecutivoEnvio'].forEach(id => {
+    ['nombreAfiliado', 'cedulaAfiliado', 'asuntoCorreo', 'ejecutivoEnvio', 'tipoAfiliacion'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('input', syncMailPreview);
       if (el) el.addEventListener('change', syncMailPreview);
     });
 
-    syncMailPreview();
+    const solicitudActiva = document.getElementById('solicitudActiva');
+    if (solicitudActiva) {
+      solicitudActiva.addEventListener('change', function () {
+        document.getElementById('resumenSolicitud').textContent = this.value || '[Pendiente de selección]';
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.location.hash === '#page-envio') showPageById('page-envio');
+      if (window.location.hash === '#page-validacion') showPageById('page-validacion');
+      syncMailPreview();
+    });
   </script>
 </body>
 </html>
