@@ -34,6 +34,7 @@
     }
     .nav-btn {
       width: 100%;
+      display: block;
       border: none;
       border-radius: 14px;
       padding: 14px 16px;
@@ -43,7 +44,18 @@
       background: rgba(255,255,255,0.12);
       color: white;
       font-weight: 700;
+      text-decoration: none;
       transition: .2s ease;
+    }
+    .new-request-btn {
+      margin-top: 18px;
+      margin-bottom: 28px;
+      background: linear-gradient(90deg, #22c55e, #15803d);
+      text-align: center;
+      box-shadow: 0 10px 22px rgba(21, 128, 61, 0.22);
+    }
+    .sidebar-spacer {
+      height: 12px;
     }
     .nav-btn.active,
     .nav-btn:hover {
@@ -321,6 +333,48 @@
       color: #475569;
       line-height: 1.7;
     }
+    .validation-panel {
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 16px;
+      background: #f8fafc;
+    }
+    .validation-result {
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid #e5e7eb;
+      background: white;
+    }
+    .validation-result.success {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+      color: #166534;
+    }
+    .validation-result.warning {
+      border-color: #fde68a;
+      background: #fffbeb;
+      color: #92400e;
+    }
+    .validation-result.danger {
+      border-color: #fecaca;
+      background: #fef2f2;
+      color: #991b1b;
+    }
+    .doc-upload-panel {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 14px;
+      padding: 14px;
+      border-radius: 14px;
+      background: white;
+      border: 1px dashed #cbd5e1;
+    }
+    .readonly-input {
+      background: #f8fafc !important;
+      color: #475569;
+    }
     .hidden { display: none !important; }
     @media (max-width: 1200px) {
       .layout { grid-template-columns: 1fr; }
@@ -345,14 +399,15 @@
       <div class="brand-sub">Administración de afiliación y actualización</div>
       <button class="nav-btn active" onclick="showPage('page-admin', this)">Administración de solicitudes</button>
       <button id="btn-envio" class="nav-btn" onclick="showPage('page-envio', this)">Enviar solicitud a afiliado</button>
-		</br>
-		 <a 
-  href="https://karlacm0070.github.io/plantillas-a2c/Vista_COOPEANDE_Creacion_solicitud_actualizada.html" 
-  target="_blank" 
-  class="nav-btn"
->
-  + Nueva Solicitud
-</a>
+      <button id="btn-validacion-firmados" class="nav-btn" onclick="showPage('page-validacion-firmados', this)">Validar documentos firmados</button>
+      <div class="sidebar-spacer"></div>
+      <a 
+        href="https://karlacm0070.github.io/plantillas-a2c/Vista_COOPEANDE_Creacion_solicitud_actualizada.html" 
+        target="_blank" 
+        class="nav-btn new-request-btn"
+      >
+        + Nueva Solicitud
+      </a>
     </aside>
 
     <main class="main">
@@ -446,8 +501,6 @@
                   <td><span class="badge badge-gray">Pendiente</span></td>
                   <td>
                     <div class="action-stack">
-                      <button class="btn btn-outline">Descargar docs firma</button>
-                      <button class="btn btn-success">Cargar firmados</button>
                       <button class="btn btn-primary" onclick="showDetail()">Ver detalle</button>
                     </div>
                   </td>
@@ -465,9 +518,6 @@
                   <td><span class="badge badge-gray">No aplica</span></td>
                   <td>
                     <div class="action-stack">
-                      <button class="btn btn-outline">Descargar docs firma</button>
-                      <button class="btn btn-success">Cargar firmados</button>
-                      <button class="btn btn-secondary">Reenviar a RPA</button>
                       <button class="btn btn-primary" onclick="showDetail()">Ver detalle</button>
                     </div>
                   </td>
@@ -485,9 +535,6 @@
                   <td><span class="badge badge-yellow">Novedades</span></td>
                   <td>
                     <div class="action-stack">
-                      <button class="btn btn-outline">Descargar docs firma</button>
-                      <button class="btn btn-success">Cargar firmados</button>
-                      <button class="btn btn-secondary">Reenviar a RPA</button>
                       <button class="btn btn-primary" onclick="showDetail()">Ver detalle</button>
                     </div>
                   </td>
@@ -505,8 +552,6 @@
                   <td><span class="badge badge-green">Completada</span></td>
                   <td>
                     <div class="action-stack">
-                      <button class="btn btn-outline">Descargar docs firma</button>
-                      <button class="btn btn-success">Cargar firmados</button>
                       <button class="btn btn-primary" onclick="showDetail()">Ver detalle</button>
                     </div>
                   </td>
@@ -524,19 +569,26 @@
                 <div class="action-stack">
                   <button class="btn btn-outline" onclick="toggleExpediente()">Ver expediente digital</button>
                   <button class="btn btn-outline">Descargar documentos habilitados para firma</button>
-                  <button class="btn btn-success">Cargar documentos firmados</button>
-                  <button class="btn btn-primary">Editar información de afiliado</button>
+                  <a href="https://karlacm0070.github.io/plantillas-a2c/Vista_COOPEANDE_Creacion_solicitud_actualizada.html" target="_blank" class="btn btn-primary">Editar información de afiliado</a>
                   <button class="btn btn-secondary" onclick="hideDetail()">Cerrar detalle</button>
                 </div>
               </div>
 
               <div id="expedientePanel" class="card" style="padding:16px; margin-bottom:16px; display:none; background:#f8fafc;">
                 <div class="section-title"><h3>Expediente digital</h3></div>
+                <div class="doc-upload-panel">
+                  <div class="field">
+                    <label>Cargar documento adicional al expediente</label>
+                    <input type="file" multiple accept=".pdf,.jpg,.jpeg,.png" />
+                    <div class="helper">Permite anexar soportes, comprobantes o documentos complementarios sin reemplazar los ya existentes.</div>
+                  </div>
+                  <button class="btn btn-success" type="button">Cargar documento adicional</button>
+                </div>
                 <div class="doc-list">
-                  <div class="doc-item"><div class="doc-meta"><strong>Cédula.pdf</strong><span>Cargado por asociado • 2026-04-09 14:31</span></div><button class="btn btn-outline">Ver</button></div>
-                  <div class="doc-item"><div class="doc-meta"><strong>Sicere.pdf</strong><span>Cargado por asociado • 2026-04-09 14:31</span></div><button class="btn btn-outline">Ver</button></div>
-                  <div class="doc-item"><div class="doc-meta"><strong>Contrato_firma.pdf</strong><span>Generado por RPA • 2026-04-09 15:10</span></div><button class="btn btn-outline">Ver</button></div>
-                  <div class="doc-item"><div class="doc-meta"><strong>Contrato_firmado.pdf</strong><span>Cargado por analista • 2026-04-10 09:00</span></div><button class="btn btn-outline">Ver</button></div>
+                  <div class="doc-item"><div class="doc-meta"><strong>Cédula.pdf</strong><span>Cargado por asociado • 2026-04-09 14:31</span></div><button class="btn btn-outline">Descargar</button></div>
+                  <div class="doc-item"><div class="doc-meta"><strong>Sicere.pdf</strong><span>Cargado por asociado • 2026-04-09 14:31</span></div><button class="btn btn-outline">Descargar</button></div>
+                  <div class="doc-item"><div class="doc-meta"><strong>Contrato_firma.pdf</strong><span>Generado por RPA • 2026-04-09 15:10</span></div><button class="btn btn-outline">Descargar</button></div>
+                  <div class="doc-item"><div class="doc-meta"><strong>Contrato_firmado.pdf</strong><span>Cargado por validación documental • 2026-04-10 09:00</span></div><button class="btn btn-outline">Descargar</button></div>
                 </div>
               </div>
 
@@ -593,6 +645,13 @@
                 <label>Nombre afiliado</label>
                 <input id="nombreAfiliado" type="text" placeholder="Juan Lopez" />
               </div>
+              <div class="field">
+                <label>Tipo de afiliación</label>
+                <select id="tipoAfiliacion">
+                  <option>Afiliado - Activo - NO condicionado</option>
+                  <option>Prospecto - Condicionado</option>
+                </select>
+              </div>
 
               <div class="field">
                 <label>Correo del afiliado</label>
@@ -615,21 +674,87 @@
               <p>Estimado(a) <strong id="previewNombre">[Nombre del cliente]</strong>,</p>
               <p>Le invitamos a completar y validar su información mediante el formulario de actualización de datos.</p>
               <p><strong>Cédula:</strong> <span id="previewCedula">[Cédula]</span></p>
+              <p><strong>Tipo de afiliación:</strong> <span id="previewTipoAfiliacion">Afiliado - Activo - NO condicionado</span></p>
               <p><strong>Acción:</strong> Ingrese al enlace enviado y complete su información.</p>
               <button class="btn btn-primary" type="button">Copiar enlace asociado</button>
             </div>
           </div>
         </div>
       </section>
+
+      <section id="page-validacion-firmados" class="page">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Validar documentos firmados</h1>
+            <p class="page-desc">Busque al afiliado, seleccione la solicitud activa, cargue los documentos firmados y valide la coincidencia de la firma contra la identificación escaneada del expediente.</p>
+          </div>
+        </div>
+
+        <div class="send-layout">
+          <div class="card send-card">
+            <h3 style="margin-top:0; color:#0f172a;">Búsqueda y carga documental</h3>
+            <p>La identificación del afiliado ya debe existir en el expediente digital. Esta vista centraliza la validación de documentos firmados sin depender de una solicitud específica desde la tabla.</p>
+            <div class="stack">
+              <div class="field">
+                <label>Cédula o identificación del afiliado</label>
+                <div style="display:flex; gap:10px; align-items:center;">
+                  <input id="cedulaValidacion" type="text" placeholder="Ej. 0912345678" />
+                  <button class="btn btn-outline" type="button" onclick="buscarAfiliadoFirmados()">Buscar</button>
+                </div>
+              </div>
+              <div class="field">
+                <label>Nombre precargado</label>
+                <input id="nombreValidacion" class="readonly-input" type="text" placeholder="Se completa al buscar" readonly />
+              </div>
+              <div class="field">
+                <label>Solicitudes activas</label>
+                <select id="solicitudActiva" disabled>
+                  <option>Busque una identificación para cargar solicitudes</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Documentos firmados</label>
+                <input id="docsFirmados" type="file" multiple accept=".pdf,.jpg,.jpeg,.png" disabled />
+                <div class="helper">Puede cargar contrato firmado, formularios firmados, anexos o documentos de soporte.</div>
+              </div>
+              <button id="btnValidarFirmas" class="btn btn-primary" type="button" onclick="validarFirmas()" disabled>Validar firma contra identificación escaneada</button>
+            </div>
+          </div>
+
+          <div class="card send-card">
+            <h3 style="margin-top:0; color:#0f172a;">Resultado de validación</h3>
+            <div id="validationResult" class="validation-result">
+              <strong>Validación pendiente</strong>
+              <p style="margin:10px 0 0; line-height:1.6;">Ingrese una cédula, seleccione una solicitud activa y cargue los documentos firmados para comparar la firma contra la identificación escaneada registrada previamente.</p>
+            </div>
+
+            <div class="validation-panel" style="margin-top:14px;">
+              <div class="stat-label">Datos usados para control</div>
+              <div class="details-grid" style="grid-template-columns:1fr; margin-top:10px;">
+                <div class="detail-item"><span>Documento base</span><strong id="docBaseValidacion">Identificación escaneada del expediente</strong></div>
+                <div class="detail-item"><span>Método de validación</span><strong>Comparación visual / biométrica simulada de firma</strong></div>
+                <div class="detail-item"><span>Acción posterior</span><strong id="accionPosterior">Registrar resultado en expediente digital</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </main>
   </div>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   if (window.location.hash === "#page-envio") {
     const btnEnvio = document.getElementById("btn-envio");
-
     if (btnEnvio) {
       showPage("page-envio", btnEnvio);
+    }
+  }
+
+  if (window.location.hash === "#page-validacion-firmados") {
+    const btnValidacion = document.getElementById("btn-validacion-firmados");
+    if (btnValidacion) {
+      showPage("page-validacion-firmados", btnValidacion);
     }
   }
 });
@@ -656,19 +781,111 @@ document.addEventListener("DOMContentLoaded", function () {
       panel.style.display = panel.style.display === 'none' || panel.style.display === '' ? 'block' : 'none';
     }
 
+    const afiliadosFirmados = {
+      '0912345678': {
+        nombre: 'Ana María Pérez',
+        solicitudes: ['SOL-0001 - Afiliación activa', 'SOL-0010 - Actualización datos'],
+        coincide: true,
+        porcentaje: '97.8%'
+      },
+      '0102030405': {
+        nombre: 'Carlos Villalobos',
+        solicitudes: ['SOL-0002 - Actualización pendiente'],
+        coincide: false,
+        porcentaje: '63.4%'
+      },
+      '0911223344': {
+        nombre: 'Luisa Gómez',
+        solicitudes: ['SOL-0003 - Revisión manual'],
+        coincide: false,
+        porcentaje: '71.2%'
+      },
+      '0708091011': {
+        nombre: 'Marvin Rojas',
+        solicitudes: ['SOL-0004 - Afiliación prospecto'],
+        coincide: true,
+        porcentaje: '95.1%'
+      }
+    };
+
+    function buscarAfiliadoFirmados() {
+      const cedula = document.getElementById('cedulaValidacion').value.trim();
+      const nombre = document.getElementById('nombreValidacion');
+      const combo = document.getElementById('solicitudActiva');
+      const docs = document.getElementById('docsFirmados');
+      const btn = document.getElementById('btnValidarFirmas');
+      const result = document.getElementById('validationResult');
+
+      if (!cedula) {
+        result.className = 'validation-result warning';
+        result.innerHTML = '<strong>Ingrese una identificación</strong><p style="margin:10px 0 0; line-height:1.6;">Debe ingresar la cédula o identificación del afiliado para realizar la búsqueda.</p>';
+        return;
+      }
+
+      const data = afiliadosFirmados[cedula] || {
+        nombre: 'Cliente demo no registrado en padrón',
+        solicitudes: ['Sin solicitudes activas encontradas'],
+        coincide: false,
+        porcentaje: '0%'
+      };
+
+      nombre.value = data.nombre;
+      combo.innerHTML = '';
+      data.solicitudes.forEach(solicitud => {
+        const opt = document.createElement('option');
+        opt.textContent = solicitud;
+        combo.appendChild(opt);
+      });
+
+      const tieneSolicitud = !data.solicitudes[0].startsWith('Sin solicitudes');
+      combo.disabled = !tieneSolicitud;
+      docs.disabled = !tieneSolicitud;
+      btn.disabled = !tieneSolicitud;
+
+      result.className = tieneSolicitud ? 'validation-result' : 'validation-result warning';
+      result.innerHTML = tieneSolicitud
+        ? '<strong>Afiliado encontrado</strong><p style="margin:10px 0 0; line-height:1.6;">Datos precargados correctamente. Seleccione la solicitud activa y cargue los documentos firmados para iniciar la validación.</p>'
+        : '<strong>Sin solicitudes activas</strong><p style="margin:10px 0 0; line-height:1.6;">No se encontraron solicitudes activas para esta identificación.</p>';
+    }
+
+    function validarFirmas() {
+      const cedula = document.getElementById('cedulaValidacion').value.trim();
+      const docs = document.getElementById('docsFirmados');
+      const combo = document.getElementById('solicitudActiva');
+      const result = document.getElementById('validationResult');
+      const data = afiliadosFirmados[cedula];
+
+      if (!docs.files || docs.files.length === 0) {
+        result.className = 'validation-result warning';
+        result.innerHTML = '<strong>Documentos pendientes</strong><p style="margin:10px 0 0; line-height:1.6;">Debe cargar al menos un documento firmado antes de ejecutar la validación.</p>';
+        return;
+      }
+
+      if (data && data.coincide) {
+        result.className = 'validation-result success';
+        result.innerHTML = '<strong>Firma validada correctamente</strong><p style="margin:10px 0 0; line-height:1.6;">La firma del documento cargado coincide con la identificación escaneada del expediente del afiliado. Coincidencia estimada: <strong>' + data.porcentaje + '</strong>.</p><p style="margin:8px 0 0; line-height:1.6;"><strong>Solicitud:</strong> ' + combo.value + '</p>';
+      } else {
+        result.className = 'validation-result danger';
+        result.innerHTML = '<strong>Validación con novedades</strong><p style="margin:10px 0 0; line-height:1.6;">La firma cargada no coincide de forma suficiente con la identificación escaneada registrada. Coincidencia estimada: <strong>' + (data ? data.porcentaje : '0%') + '</strong>. Se recomienda revisión manual.</p><p style="margin:8px 0 0; line-height:1.6;"><strong>Solicitud:</strong> ' + combo.value + '</p>';
+      }
+    }
+
     function syncMailPreview() {
       const nombre = document.getElementById('nombreAfiliado');
       const cedula = document.getElementById('cedulaAfiliado');
       const asunto = document.getElementById('asuntoCorreo');
+      const tipoAfiliacion = document.getElementById('tipoAfiliacion');
       const previewNombre = document.getElementById('previewNombre');
       const previewCedula = document.getElementById('previewCedula');
       const previewAsunto = document.getElementById('previewAsunto');
+      const previewTipoAfiliacion = document.getElementById('previewTipoAfiliacion');
       if (previewNombre) previewNombre.textContent = nombre && nombre.value.trim() ? nombre.value.trim() : '[Nombre del cliente]';
       if (previewCedula) previewCedula.textContent = cedula && cedula.value.trim() ? cedula.value.trim() : '[Cédula]';
       if (previewAsunto) previewAsunto.textContent = asunto && asunto.value.trim() ? asunto.value.trim() : 'Actualización de información del asociado';
+      if (previewTipoAfiliacion) previewTipoAfiliacion.textContent = tipoAfiliacion && tipoAfiliacion.value ? tipoAfiliacion.value : 'Afiliado - Activo - NO condicionado';
     }
 
-    ['nombreAfiliado', 'cedulaAfiliado', 'asuntoCorreo'].forEach(id => {
+    ['nombreAfiliado', 'cedulaAfiliado', 'asuntoCorreo', 'tipoAfiliacion'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('input', syncMailPreview);
     });
