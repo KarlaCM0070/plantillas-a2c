@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monitoreo de Solicitudes</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --primary: #0b2f5b;
+      --primary-2: #114a8b;
+      --accent: #2f80ed;
+      --accent-soft: #eaf3ff;
+      --success: #138a63;
+      --success-soft: #e9f8f2;
+      --warning: #d9822b;
+      --warning-soft: #fff5e6;
+      --danger: #c83737;
+      --danger-soft: #fff1f1;
+      --text: #1f2937;
+      --muted: #667085;
+      --border: #d9e2ef;
+      --shadow: 0 16px 38px rgba(15, 59, 117, 0.11);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+      color: var(--text);
+    }
+
+    main {
+      padding: 28px;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #ffffff 0%, #edf5ff 100%);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 26px;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      color: var(--primary);
+      font-size: 32px;
+      line-height: 1.1;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+      max-width: 950px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .metric {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 17px;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .metric strong {
+      display: block;
+      color: var(--primary);
+      margin-top: 8px;
+      font-size: 28px;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      margin-bottom: 22px;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .panel h2 {
+      margin: 0 0 6px;
+      color: var(--primary);
+      font-size: 20px;
+    }
+
+    .panel p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 13px;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .filters {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: end;
+    }
+
+    .filter-field { width: 210px; }
+    .filter-date { width: 165px; }
+    .filter-search { width: 300px; }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 13px;
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+      color: var(--text);
+      transition: .18s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(47, 128, 237, .13);
+    }
+
+    input[readonly], textarea[readonly] {
+      background: #f7f9fc;
+      color: #475467;
+      cursor: default;
+    }
+
+    label {
+      display: block;
+      color: #344054;
+      font-size: 11px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      font-weight: 800;
+      margin-bottom: 7px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 13px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .18s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-2); }
+    .btn-secondary { background: #fff; color: var(--primary); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--accent-soft); }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-warning { background: var(--warning-soft); color: #985411; border: 1px solid #f2d7ad; }
+    .btn-danger { background: var(--danger-soft); color: var(--danger); border: 1px solid #ffd0d0; }
+    .btn-mini { padding: 8px 10px; font-size: 12px; border-radius: 11px; }
+    .btn-disabled { opacity: .62; cursor: not-allowed; }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      min-width: 1850px;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    th {
+      background: #eaf3ff;
+      color: var(--primary);
+      text-align: left;
+      padding: 12px 10px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #e8eef7;
+      vertical-align: top;
+      font-size: 13px;
+    }
+
+    tbody tr:hover td { background: #f8fbff; }
+
+    .subject {
+      max-width: 260px;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1.35;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      max-width: 280px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      min-width: max-content;
+    }
+
+    .badge.success { background: var(--success-soft); color: var(--success); }
+    .badge.warning { background: var(--warning-soft); color: #985411; }
+    .badge.danger { background: var(--danger-soft); color: var(--danger); }
+    .badge.info { background: var(--accent-soft); color: var(--primary-2); }
+    .badge.neutral { background: #f2f4f7; color: #475467; }
+
+    .attachments {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-width: 225px;
+    }
+
+    .attachment-download-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .attachment-download-card {
+      border: 1px solid var(--border);
+      background: #f8fbff;
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .attachment-download-card strong {
+      display: block;
+      color: var(--primary);
+      font-size: 13px;
+      margin-bottom: 4px;
+      word-break: break-word;
+    }
+
+    .attachment-download-card span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .file-pill {
+      background: #f4f7fb;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 8px;
+      font-size: 11px;
+      color: #344054;
+      font-weight: 700;
+    }
+
+    .actions-cell {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      min-width: 210px;
+    }
+
+    dialog {
+      border: 0;
+      border-radius: 24px;
+      width: min(1100px, calc(100vw - 28px));
+      padding: 0;
+      box-shadow: 0 25px 90px rgba(0,0,0,.24);
+    }
+
+    dialog::backdrop {
+      background: rgba(10, 37, 77, .58);
+      backdrop-filter: blur(3px);
+    }
+
+    .modal-head {
+      background: var(--primary);
+      color: #fff;
+      padding: 20px 22px;
+      border-radius: 24px 24px 0 0;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .modal-head h3 {
+      margin: 0 0 5px;
+      font-size: 19px;
+    }
+
+    .modal-head span {
+      color: #d5e6ff;
+      font-size: 13px;
+    }
+
+    .modal-body { padding: 22px; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .form-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .form-grid.one { grid-template-columns: 1fr; }
+
+    .modal-section-title {
+      margin: 18px 0 10px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      color: var(--primary);
+      font-size: 14px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .mini-table {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: auto;
+      margin-top: 10px;
+      max-height: 430px;
+    }
+
+    .mini-table table { min-width: 900px; }
+    .items-table table { min-width: 1200px; }
+    .mini-table input { padding: 8px 9px; border-radius: 10px; font-size: 13px; }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 0 22px 22px;
+      flex-wrap: wrap;
+    }
+
+    .items-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--primary-2);
+      font-size: 12px;
+      font-weight: 800;
+      border: 1px solid #cfdef5;
+    }
+
+    .chip button {
+      padding: 0;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid #c4d5ef;
+      color: var(--primary-2);
+      font-size: 12px;
+      line-height: 1;
+    }
+
+
+
+    .login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      background:
+        radial-gradient(circle at top left, rgba(47, 128, 237, .18), transparent 34%),
+        linear-gradient(135deg, #0b2f5b 0%, #114a8b 52%, #eaf3ff 100%);
+    }
+
+    .login-card {
+      width: min(460px, 100%);
+      background: rgba(255,255,255,.96);
+      border: 1px solid rgba(255,255,255,.7);
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: 0 28px 90px rgba(3, 27, 59, .28);
+    }
+
+    .login-brand {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 26px;
+      margin-bottom: 16px;
+    }
+
+    .login-card h1 {
+      margin: 0 0 8px;
+      color: var(--primary);
+      font-size: 27px;
+      line-height: 1.15;
+    }
+
+    .login-card p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .login-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .login-error {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 13px;
+      color: var(--danger);
+      background: var(--danger-soft);
+      border: 1px solid #ffd0d0;
+      font-size: 13px;
+      font-weight: 700;
+      display: none;
+    }
+
+    .login-help {
+      margin-top: 14px;
+      background: #f7f9fc;
+      border: 1px dashed var(--border);
+      border-radius: 16px;
+      padding: 11px 12px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .session-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--primary);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 800;
+      box-shadow: 0 8px 18px rgba(15, 59, 117, 0.06);
+    }
+
+    select:disabled {
+      background: #f7f9fc;
+      color: #667085;
+      cursor: not-allowed;
+    }
+
+    .upload-box {
+      border: 1px dashed #b9c8dc;
+      background: #f8fbff;
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .file-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .file-preview .file-pill {
+      background: #fff;
+    }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 16px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: .22s ease;
+      font-size: 14px;
+      z-index: 20;
+    }
+
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .hidden { display: none !important; }
+
+    @media (max-width: 1100px) {
+      .hero, .panel-header, .items-toolbar { flex-direction: column; align-items: stretch; }
+      .metrics, .form-grid, .form-grid.two, .attachment-download-list { grid-template-columns: 1fr; }
+      main { padding: 18px; }
+      .filter-field, .filter-date, .filter-search { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <section id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <div class="login-brand">🔐</div>
+      <h1>Ingreso al monitoreo de solicitudes</h1>
+      <p>Acceso para usuarios autorizados. Ingresa tus credenciales para visualizar la bandeja y gestionar casos.</p>
+      <div class="form-grid one">
+        <div>
+          <label>Usuario</label>
+          <input id="loginUser" type="text" placeholder="Ej. admin" autocomplete="username" onkeydown="handleLoginKey(event)" />
+        </div>
+        <div>
+          <label>Contraseña</label>
+          <input id="loginPassword" type="password" placeholder="Ej. admin123" autocomplete="current-password" onkeydown="handleLoginKey(event)" />
+        </div>
+      </div>
+      <div class="login-actions">
+        <button class="btn-primary" onclick="loginApp()">Ingresar</button>
+        <span class="badge info">Ambiente demo</span>
+      </div>
+      <div id="loginError" class="login-error">Usuario o contraseña inválidos.</div>
+      <div class="login-help">Credenciales demo: <strong>admin</strong> / <strong>admin123</strong>. En producción esta validación debe integrarse con el directorio corporativo, SSO o servicio de autenticación del cliente.</div>
+    </div>
+  </section>
+
+  <main id="appMain" class="hidden">
+    <section class="hero">
+      <div>
+        <h1>Monitoreo de solicitudes</h1>
+        <p>Vista consolidada para supervisar correos recibidos, control de excepciones, creación de OT en Solser y verificación de ítems para ingreso a DELIMP o DELZOF.</p>
+      </div>
+      <div class="hero-actions">
+        <span class="session-pill">👤 Usuario: admin</span>
+        <button class="btn-success" onclick="openManualCaseDialog()">+ Crear caso manual</button>
+        <button class="btn-secondary" onclick="refreshInbox()">Actualizar bandeja</button>
+        <button class="btn-primary" onclick="exportInbox()">Exportar bandeja</button>
+        <button class="btn-secondary" onclick="logoutApp()">Cerrar sesión</button>
+      </div>
+    </section>
+
+    <section class="metrics">
+      <div class="metric"><span>Solicitudes recibidas</span><strong id="metricTotal">0</strong></div>
+      <div class="metric"><span>Excepciones</span><strong id="metricExceptions">0</strong></div>
+      <div class="metric"><span>Enviadas a Solser</span><strong id="metricSolser">0</strong></div>
+      <div class="metric"><span>Enviadas API</span><strong id="metricApi">0</strong></div>
+      <div class="metric"><span>Completadas</span><strong id="metricCompleted">0</strong></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Bandeja de solicitudes recibidas por correo</h2>
+          <p>La automatización clasifica el tipo de trámite por asunto: SERVICIO: IMP- para importación, SERVICIO: ZF- para zona franca o no identificado cuando el asunto no cumple el formato.</p>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="filters">
+          <div class="filter-field">
+            <label>Estado Solser</label>
+            <select id="solserFilter" onchange="renderTable()">
+              <option value="todos">Todos</option>
+              <option value="Excepción">Excepción</option>
+              <option value="Enviado a Solser">Enviado a Solser</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label>Estado del caso</label>
+            <select id="caseFilter" onchange="renderTable()">
+              <option value="todos">Todos</option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="Completado">Completado</option>
+            </select>
+          </div>
+          <div class="filter-date">
+            <label>Fecha desde</label>
+            <input id="dateFromFilter" type="date" onchange="renderTable()" />
+          </div>
+          <div class="filter-date">
+            <label>Fecha hasta</label>
+            <input id="dateToFilter" type="date" onchange="renderTable()" />
+          </div>
+          <div class="filter-search">
+            <label>Búsqueda</label>
+            <input id="searchInput" type="text" placeholder="Buscar cliente, asunto, remitente..." oninput="renderTable()" />
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Fecha recepción</th>
+              <th>Remitente</th>
+              <th>Asunto</th>
+              <th>Tipo de trámite</th>
+              <th>Cliente</th>
+              <th>Servicio</th>
+              <th>Importador</th>
+              <th>Adjuntos</th>
+              <th>BL</th>
+              <th>Facturas</th>
+              <th>Número items totales</th>
+              <th>Estado Solser</th>
+              <th>Estado de ingreso</th>
+              <th>Estado del caso</th>
+              <th>Observaciones / excepción</th>
+              <th>Código OT</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="mailTable"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="reviewDialog">
+    <div class="modal-head">
+      <div>
+        <h3 id="modalTitle">Detalle de solicitud</h3>
+        <span id="modalSubtitle">Revisa la información extraída antes de enviar a Solser.</span>
+      </div>
+      <span class="badge warning" id="modalStatusBadge">Excepción</span>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="activeRecordId" />
+      <div class="form-grid">
+        <div><label>Cliente</label><input id="formCliente" type="text" /></div>
+        <div><label>Servicio</label><input id="formServicio" type="text" /></div>
+        <div><label>Importador</label><input id="formImportador" type="text" /></div>
+      </div>
+      <div class="form-grid">
+        <div>
+          <label>Tipo de trámite</label>
+          <select id="formTipoTramite" onchange="syncTargetSystemField()">
+            <option value="Importación">Importación</option>
+            <option value="Zona franca">Zona franca</option>
+            <option value="No identificado">No identificado</option>
+          </select>
+        </div>
+        <div><label>Sistema destino</label><input id="formSistemaDestino" type="text" readonly /></div>
+        <div><label>Clasificación detectada por asunto</label><input id="formClasificacionOrigen" type="text" readonly /></div>
+      </div>
+      <div class="form-grid">
+        <div><label>Número BL</label><input id="formBl" type="text" /></div>
+        <div><label>Mercancía</label><input id="formMercancia" type="text" /></div>
+        <div><label>Moneda</label><input id="formMoneda" type="text" /></div>
+      </div>
+      <div class="form-grid">
+        <div><label>Puerto / país origen</label><input id="formOrigen" type="text" /></div>
+        <div><label>Puerto / país destino</label><input id="formDestino" type="text" /></div>
+        <div><label>Proveedor / remitente</label><input id="formProveedor" type="text" /></div>
+      </div>
+      <div class="form-grid">
+        <div><label>Peso bruto</label><input id="formPesoBruto" type="text" /></div>
+        <div><label>Peso neto</label><input id="formPesoNeto" type="text" /></div>
+        <div><label>Volumen</label><input id="formVolumen" type="text" /></div>
+      </div>
+      <div class="form-grid two" id="otDetailBox">
+        <div><label>Código OT</label><input id="formOt" type="text" readonly /></div>
+        <div><label>Estado Solser</label><input id="formEstadoSolser" type="text" readonly /></div>
+      </div>
+      <div class="form-grid one">
+        <div><label>Observaciones</label><textarea id="formObservaciones" rows="3"></textarea></div>
+      </div>
+      <div class="modal-section-title">Documentos adjuntos del caso</div>
+      <div class="attachment-download-list" id="attachmentRows"></div>
+
+      <div class="modal-section-title">Facturas extraídas</div>
+      <div class="mini-table table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Número factura</th>
+              <th>Fecha</th>
+              <th>Proveedor</th>
+              <th>Total</th>
+              <th>Moneda</th>
+            </tr>
+          </thead>
+          <tbody id="invoiceRows"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-actions" id="reviewActions"></div>
+  </dialog>
+
+
+
+  <dialog id="manualCaseDialog">
+    <div class="modal-head">
+      <div>
+        <h3>Crear caso manual</h3>
+        <span>Registra una solicitud creada desde la aplicación. Los datos de correo quedarán en blanco.</span>
+      </div>
+      <span class="badge info">Manual</span>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div><label>Cliente</label><input id="manualCliente" type="text" placeholder="Código o nombre del cliente" /></div>
+        <div><label>Servicio</label><input id="manualServicio" type="text" placeholder="Ej. IMP-01 / ZF-02" /></div>
+        <div><label>Importador</label><input id="manualImportador" type="text" placeholder="Código o nombre del importador" /></div>
+      </div>
+      <div class="form-grid two">
+        <div>
+          <label>Tipo de trámite</label>
+          <select id="manualTipoTramite" onchange="syncManualTargetSystemField()">
+            <option value="Importación">Importación</option>
+            <option value="Zona franca">Zona franca</option>
+            <option value="No identificado">No identificado</option>
+          </select>
+        </div>
+        <div><label>Sistema destino</label><input id="manualSistemaDestino" type="text" readonly value="DELIMP" /></div>
+      </div>
+      <div class="form-grid one">
+        <div>
+          <label>Archivos adjuntos</label>
+          <div class="upload-box">
+            <input id="manualAdjuntos" type="file" multiple onchange="renderManualFilePreview()" />
+            <div class="muted" style="margin-top:8px;max-width:100%;">Selecciona los documentos que soportan el caso: factura, BL, documentos complementarios o anexos.</div>
+            <div id="manualFilePreview" class="file-preview"></div>
+          </div>
+        </div>
+        <div><label>Observaciones</label><textarea id="manualObservaciones" rows="3" placeholder="Observación opcional para el caso manual"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="document.getElementById('manualCaseDialog').close()">Cancelar</button>
+      <button class="btn-success" onclick="createManualCase()">Crear y cargar caso</button>
+    </div>
+  </dialog>
+
+  <dialog id="itemsDialog">
+    <div class="modal-head">
+      <div>
+        <h3 id="itemsTitle">Verificar items</h3>
+        <span id="itemsSubtitle">Tabla editable de ítems extraídos para DELIMP / DELZOF.</span>
+      </div>
+      <span class="badge info" id="itemsModeBadge">Pendiente</span>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="activeItemsRecordId" />
+      <div class="items-toolbar">
+        <div>
+          <div class="modal-section-title" style="margin-top:0;padding-top:0;border-top:0;">Tabla editable de ítems extraídos</div>
+          <p class="muted" id="itemsHelpText">Puedes revisar, editar y agregar columnas adicionales antes de enviar por API.</p>
+          <div class="chips" id="extraColumnChips"></div>
+        </div>
+        <div class="filters" id="itemsEditActions">
+          <button class="btn-secondary" onclick="openColumnDialog()">+ Agregar columna</button>
+          <button class="btn-success" onclick="sendItemsApi()">Enviar API</button>
+        </div>
+      </div>
+      <div class="mini-table items-table">
+        <table>
+          <thead id="itemsHead"></thead>
+          <tbody id="itemsBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="document.getElementById('itemsDialog').close()">Cerrar</button>
+    </div>
+  </dialog>
+
+  <dialog id="columnDialog">
+    <div class="modal-head">
+      <div>
+        <h3>Agregar columna</h3>
+        <span>Selecciona una columna adicional, regla o valor por defecto.</span>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid one">
+        <div>
+          <label>Columna adicional</label>
+          <select id="extraColumnSelect" onchange="toggleOtherColumnName()"></select>
+        </div>
+        <div id="otherColumnNameBox" class="hidden">
+          <label>Nombre de la columna</label>
+          <input id="otherColumnNameInput" type="text" placeholder="Ej. Código interno, observación, categoría" />
+        </div>
+        <div>
+          <label>Forma de completar</label>
+          <select id="columnRuleSelect" onchange="toggleDefaultValueInput()">
+            <option value="regla_1">Regla 1</option>
+            <option value="regla_2">Regla 2</option>
+            <option value="regla_3">Regla 3</option>
+            <option value="default_value">Completar valor por defecto</option>
+          </select>
+        </div>
+        <div id="defaultValueBox" class="hidden">
+          <label>Valor por defecto</label>
+          <input id="defaultValueInput" type="text" placeholder="Digite el valor que se aplicará a todas las líneas" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="document.getElementById('columnDialog').close()">Cancelar</button>
+      <button class="btn-primary" onclick="applyExtraColumn()">Agregar a tabla</button>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+
+    function handleLoginKey(event) {
+      if (event.key === 'Enter') loginApp();
+    }
+
+    function loginApp() {
+      const user = document.getElementById('loginUser').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      const isValid = user === 'admin' && password === 'admin123';
+      document.getElementById('loginError').style.display = isValid ? 'none' : 'block';
+      if (!isValid) return;
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('appMain').classList.remove('hidden');
+      renderTable();
+      showToast('Sesión iniciada correctamente.');
+    }
+
+    function logoutApp() {
+      document.getElementById('appMain').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('loginPassword').value = '';
+      document.getElementById('loginError').style.display = 'none';
+    }
+
+    const baseInvoiceItems = [
+      { factura: 'FAEVII14590', codigo: '00087470', cantidad: '5.00', descripcion: 'COBERTOR LIGERO MAT/IND DINOSAURIOS', pu: '7.57', total: '37.85', extras: {} },
+      { factura: 'FAEVII14590', codigo: '00090164', cantidad: '6.00', descripcion: 'SÁBANAS VIASOFT WASHED KS WHITE', pu: '14.06', total: '84.36', extras: {} },
+      { factura: 'FAEVII14590', codigo: '00081007', cantidad: '39.00', descripcion: 'FUNDA DE SILLÓN NIZA IND CAFÉ', pu: '12.24', total: '477.36', extras: {} },
+      { factura: 'FAEVII14590', codigo: '00089863', cantidad: '15.00', descripcion: 'COBERTOR NÓRDICO MAT/IND XL VANCOUVER', pu: '10.80', total: '162.00', extras: {} },
+      { factura: 'FAEVII14590', codigo: '00089869', cantidad: '4.00', descripcion: 'COBERTOR NÓRDICO KS/QS XL SUIZA', pu: '14.02', total: '56.08', extras: {} },
+      { factura: 'FAEVII14590', codigo: '00024316', cantidad: '6.00', descripcion: 'JGO SÁBANAS VIASOFT IND MARINO', pu: '9.67', total: '58.02', extras: {} },
+      { factura: 'FAEVII14590', codigo: '00035210', cantidad: '4.00', descripcion: 'ALMOHADA KS VIALIFRESH SUPER CONFORT', pu: '10.80', total: '43.20', extras: {} },
+      { factura: 'FAEVII14590', codigo: '00088515', cantidad: '2.00', descripcion: 'EDREDÓN KS XL DUVET BASIC', pu: '26.57', total: '53.14', extras: {} },
+      { factura: 'FAEVII14590', codigo: '00088845', cantidad: '14.00', descripcion: 'ALMOHADA BODY COMFORT WASHED GRIS', pu: '13.50', total: '189.00', extras: {} },
+      { factura: 'FAEVII14590', codigo: '00090179', cantidad: '12.00', descripcion: 'FUNDA DE ALMOHADA STD NOVO ROSA', pu: '4.37', total: '52.44', extras: {} }
+    ];
+
+    const availableExtraColumns = [
+      { key: 'referencia', label: 'Referencia' },
+      { key: 'partida', label: 'Partida' },
+      { key: 'codigo_valor', label: 'Código valor' },
+      { key: 'codigo_golfito', label: 'Código Golfito' },
+      { key: 'otro', label: 'Otro' }
+    ];
+
+    let records = [
+      createRecord('REQ-001','2026-05-26 08:41','pedimentador1@cliente.com','CLIENTE: 1024 SERVICIO: IMP-01 IMPORTADOR: 1024','1024','IMP-01','1024',['FAEVII14590.pdf','BL_001.pdf'],'HLCU-8934551','Enviado a Solser','Enviado API','OT-905431','Formato correcto. Datos procesados y enviados a sistemas.',10),
+      createRecord('REQ-002','2026-05-26 09:12','pedimentador2@cliente.com','CLIENTE: 2040 SERVICIO: IMP-07','2040','IMP-07','2040',['documentos_importacion.pdf'],'','Excepción','Pendiente','','BL y factura vienen unificados en un solo archivo. Confirmar número de BL o continuar sin BL.',8),
+      createRecord('REQ-003','2026-05-26 10:05','pedimentador3@cliente.com','Solicitud nueva importación urgente','','','',['factura.png','conocimiento_embarque.pdf'],'MEDU-771002','Excepción','Pendiente','','No se entiende el asunto. Formato inválido: no contiene CLIENTE / SERVICIO / IMP o ZF.',6),
+      createRecord('REQ-004','2026-05-26 11:28','pedimentador4@cliente.com','CLIENTE: 8820 SERVICIO: IMP-99 IMPORTADOR: 8820','8820','IMP-99','8820',['invoice.xlsx','BL.pdf'],'SUDU-557701','Excepción','Pendiente','','Servicio no existe en Solser para el cliente especificado. Confirmar servicio correcto.',7),
+      createRecord('REQ-005','2026-05-26 12:10','pedimentador5@cliente.com','CLIENTE: 6110 SERVICIO: IMP-03 IMPORTADOR: 6001','6110','IMP-03','6001',['factura_778.pdf','bl_778.tif'],'ONEY-448812','Enviado a Solser','Pendiente','OT-981220','OT creada en Solser. Pendiente verificar ítems y enviar a DELIMP.',10),
+      createRecord('REQ-006','2026-05-27 08:22','pedimentador6@cliente.com','CLIENTE: 5540 SERVICIO: ZF-02 IMPORTADOR: 5540','5540','ZF-02','5540',['factura_zf.pdf','BL_zf.pdf'],'MSCU-224100','Enviado a Solser','Enviado API','OT-773210','Zona franca procesada y enviada a DELZOF.',9),
+      createRecord('REQ-007','2026-05-27 09:17','pedimentador7@cliente.com','CLIENTE: 3190 SERVICIO: ZF-04 IMPORTADOR: 3190','3190','ZF-04','3190',['factura_zf_02.pdf'],'','Excepción','Pendiente','','Solicitud ZF sin BL. Confirmar si se debe continuar sin conocimiento de embarque.',5),
+      createRecord('REQ-008','2026-05-27 10:31','pedimentador8@cliente.com','CLIENTE: 7301 SERVICIO: IMP-05 IMPORTADOR: 7301','7301','IMP-05','7301',[],'','Excepción','Pendiente','','No tiene documentos adjuntos. Requiere reenviar correo con factura y BL.',0),
+      createRecord('REQ-009','2026-05-27 11:46','pedimentador9@cliente.com','CLIENTE: 4800 SERVICIO: IMP-02 IMPORTADOR: 4800','4800','IMP-02','4800',['FAEVII14590.pdf','BL_009.pdf'],'MAEU-993100','Enviado a Solser','Pendiente','OT-664209','Pendiente de revisión de ítems antes de enviar a DELIMP.',10),
+      createRecord('REQ-010','2026-05-27 14:05','pedimentador10@cliente.com','CLIENTE: 9150 SERVICIO: ZF-01 IMPORTADOR: 9000','9150','ZF-01','9000',['factura_textil.pdf','bl_textil.pdf'],'COSU-550120','Enviado a Solser','Pendiente','OT-224518','OT creada. Pendiente ingreso a DELZOF.',6)
+    ];
+
+    function createRecord(id, fecha, remitente, asunto, cliente, servicio, importador, adjuntos, bl, estadoSolser, estadoIngreso, ot, observacion, itemCount) {
+      const items = itemCount > 0 ? JSON.parse(JSON.stringify(baseInvoiceItems.slice(0, itemCount))) : [];
+      const facturas = itemCount > 0 ? [{ numero: 'FAEVII14590', fecha: '09/04/2026', proveedor: 'VIANNEY TEXTIL HOGAR SA DE CV', total: '16,053.70', moneda: 'USD' }] : [];
+      return {
+        id, fecha, remitente, asunto, cliente, servicio, importador, adjuntos, bl,
+        tipoTramite: detectProcessType(asunto),
+        facturas,
+        items,
+        estadoSolser,
+        estadoIngreso,
+        estadoCaso: estadoSolser === 'Enviado a Solser' && estadoIngreso === 'Enviado API' ? 'Completado' : 'Pendiente',
+        excepcion: estadoSolser === 'Excepción' ? observacion : '',
+        ot,
+        extraColumns: [],
+        datos: {
+          mercancia: itemCount > 0 ? 'Textiles para hogar' : '',
+          moneda: 'USD',
+          origen: 'AGUASCALIENTES, MÉXICO',
+          destino: 'SAN JOSÉ, COSTA RICA',
+          proveedor: 'VIANNEY TEXTIL HOGAR SA DE CV',
+          pesoBruto: itemCount > 0 ? 'Pendiente' : '',
+          pesoNeto: itemCount > 0 ? 'Pendiente' : '',
+          volumen: itemCount > 0 ? 'Pendiente' : '',
+          observaciones: observacion
+        }
+      };
+    }
+
+    function detectProcessType(subject) {
+      const text = String(subject || '').toUpperCase();
+      const hasFormat = text.includes('CLIENTE:') && text.includes('SERVICIO:');
+      if (!hasFormat) return 'No identificado';
+
+      // La clasificación debe basarse en el valor de SERVICIO, no en otras palabras del asunto.
+      // Ejemplo: "SERVICIO: ZF-02" = Zona franca, aunque también exista la palabra "IMPORTADOR".
+      const serviceMatch = text.match(/SERVICIO:\s*(ZF|IMP)\s*-/);
+      if (serviceMatch?.[1] === 'ZF') return 'Zona franca';
+      if (serviceMatch?.[1] === 'IMP') return 'Importación';
+
+      if (/SERVICIO:\s*ZF\b/.test(text) || /\bZF-\d+/i.test(text)) return 'Zona franca';
+      if (/SERVICIO:\s*IMP\b/.test(text) || /\bIMP-\d+/i.test(text)) return 'Importación';
+      return 'No identificado';
+    }
+
+    function targetSystem(tipoTramite) {
+      if (tipoTramite === 'Importación') return 'DELIMP';
+      if (tipoTramite === 'Zona franca') return 'DELZOF';
+      return 'No identificado';
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('mailTable');
+      const solserFilter = document.getElementById('solserFilter').value;
+      const caseFilter = document.getElementById('caseFilter').value;
+      const dateFrom = document.getElementById('dateFromFilter').value;
+      const dateTo = document.getElementById('dateToFilter').value;
+      const search = (document.getElementById('searchInput').value || '').toLowerCase();
+      tbody.innerHTML = '';
+
+      getFilteredRecords().forEach((record, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${escapeHtml(record.fecha)}</td>
+          <td>${escapeHtml(record.remitente)}</td>
+          <td><div class="subject">${escapeHtml(record.asunto)}</div></td>
+          <td>${renderProcessBadge(record.tipoTramite)}</td>
+          <td>${escapeHtml(record.cliente || 'Pendiente')}</td>
+          <td>${escapeHtml(record.servicio || 'Pendiente')}</td>
+          <td>${escapeHtml(record.importador || 'Pendiente')}</td>
+          <td><div class="attachments">${record.adjuntos.length ? record.adjuntos.map(file => `<span class="file-pill">${escapeHtml(file)}</span>`).join('') : '<span class="badge danger">Sin adjuntos</span>'}</div></td>
+          <td>${escapeHtml(record.bl || 'Sin BL')}</td>
+          <td>${record.facturas.length}</td>
+          <td><strong>${record.items.length}</strong></td>
+          <td>${renderSolserStatus(record.estadoSolser)}</td>
+          <td>${renderIngresoStatus(record.estadoIngreso)}</td>
+          <td>${renderCaseStatus(record.estadoCaso)}</td>
+          <td><div class="muted">${escapeHtml(record.excepcion || record.datos.observaciones || 'Sin observaciones')}</div></td>
+          <td>${record.ot ? `<span class="badge success">${escapeHtml(record.ot)}</span>` : '<span class="badge neutral">Pendiente</span>'}</td>
+          <td><div class="actions-cell">${renderActions(record)}</div></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      updateMetrics();
+    }
+
+    function getFilteredRecords() {
+      const solserFilter = document.getElementById('solserFilter').value;
+      const caseFilter = document.getElementById('caseFilter').value;
+      const dateFrom = document.getElementById('dateFromFilter').value;
+      const dateTo = document.getElementById('dateToFilter').value;
+      const search = (document.getElementById('searchInput').value || '').toLowerCase();
+
+      return records.filter(record => {
+        const date = record.fecha.slice(0, 10);
+        const searchable = `${record.fecha} ${record.remitente} ${record.asunto} ${record.tipoTramite} ${record.cliente} ${record.servicio} ${record.importador} ${record.bl} ${record.excepcion} ${record.ot} ${record.estadoSolser} ${record.estadoIngreso} ${record.estadoCaso}`.toLowerCase();
+        if (solserFilter !== 'todos' && record.estadoSolser !== solserFilter) return false;
+        if (caseFilter !== 'todos' && record.estadoCaso !== caseFilter) return false;
+        if (dateFrom && date < dateFrom) return false;
+        if (dateTo && date > dateTo) return false;
+        if (search && !searchable.includes(search)) return false;
+        return true;
+      });
+    }
+
+    function renderActions(record) {
+      const detailText = record.estadoSolser === 'Enviado a Solser' ? 'Ver detalle' : 'Confirmar datos';
+      return `
+        <button class="${record.estadoSolser === 'Excepción' ? 'btn-warning' : 'btn-secondary'} btn-mini" onclick="openReview('${record.id}')">${detailText}</button>
+        <button class="btn-primary btn-mini" onclick="openItems('${record.id}')">Verificar items</button>
+      `;
+    }
+
+    function renderProcessBadge(value) {
+      if (value === 'Importación') return '<span class="badge info">Importación</span>';
+      if (value === 'Zona franca') return '<span class="badge success">Zona franca</span>';
+      return '<span class="badge danger">No identificado</span>';
+    }
+
+    function renderSolserStatus(status) {
+      return status === 'Enviado a Solser'
+        ? '<span class="badge success">Enviado a Solser</span>'
+        : '<span class="badge warning">Excepción</span>';
+    }
+
+    function renderIngresoStatus(status) {
+      return status === 'Enviado API'
+        ? '<span class="badge success">Enviado API</span>'
+        : '<span class="badge info">Pendiente</span>';
+    }
+
+    function renderCaseStatus(status) {
+      return status === 'Completado'
+        ? '<span class="badge success">Completado</span>'
+        : '<span class="badge warning">Pendiente</span>';
+    }
+
+    function updateMetrics() {
+      document.getElementById('metricTotal').textContent = records.length;
+      document.getElementById('metricExceptions').textContent = records.filter(r => r.estadoSolser === 'Excepción').length;
+      document.getElementById('metricSolser').textContent = records.filter(r => r.estadoSolser === 'Enviado a Solser').length;
+      document.getElementById('metricApi').textContent = records.filter(r => r.estadoIngreso === 'Enviado API').length;
+      document.getElementById('metricCompleted').textContent = records.filter(r => r.estadoCaso === 'Completado').length;
+    }
+
+    function openReview(id) {
+      const record = records.find(r => r.id === id);
+      if (!record) return;
+      const readOnly = record.estadoSolser === 'Enviado a Solser';
+      const canEditTipoTramite = record.estadoCaso !== 'Completado';
+
+      document.getElementById('activeRecordId').value = id;
+      document.getElementById('modalTitle').textContent = readOnly ? 'Detalle de solicitud procesada' : 'Confirmar datos de excepción';
+      document.getElementById('modalSubtitle').textContent = record.asunto || 'Caso manual creado en la aplicación';
+      document.getElementById('modalStatusBadge').textContent = record.estadoSolser;
+      document.getElementById('modalStatusBadge').className = `badge ${readOnly ? 'success' : 'warning'}`;
+
+      setFormValue('formCliente', record.cliente, readOnly);
+      setFormValue('formServicio', record.servicio, readOnly);
+      setFormValue('formImportador', record.importador, readOnly);
+      document.getElementById('formTipoTramite').value = record.tipoTramite || detectProcessType(record.asunto);
+      document.getElementById('formTipoTramite').disabled = !canEditTipoTramite;
+      document.getElementById('formClasificacionOrigen').value = record.origenCaso === 'Manual' ? 'Caso manual' : detectProcessType(record.asunto);
+      syncTargetSystemField();
+      setFormValue('formBl', record.bl, readOnly);
+      setFormValue('formMercancia', record.datos.mercancia, readOnly);
+      setFormValue('formMoneda', record.datos.moneda, readOnly);
+      setFormValue('formOrigen', record.datos.origen, readOnly);
+      setFormValue('formDestino', record.datos.destino, readOnly);
+      setFormValue('formProveedor', record.datos.proveedor, readOnly);
+      setFormValue('formPesoBruto', record.datos.pesoBruto, readOnly);
+      setFormValue('formPesoNeto', record.datos.pesoNeto, readOnly);
+      setFormValue('formVolumen', record.datos.volumen, readOnly);
+      setFormValue('formOt', record.ot, true);
+      setFormValue('formEstadoSolser', record.estadoSolser, true);
+      setTextareaValue('formObservaciones', record.excepcion || record.datos.observaciones || '', readOnly);
+
+      document.getElementById('otDetailBox').classList.toggle('hidden', !readOnly);
+      renderAttachmentRows(record);
+      renderInvoiceRows(record, readOnly);
+      renderReviewActions(record, readOnly, canEditTipoTramite);
+      document.getElementById('reviewDialog').showModal();
+    }
+
+    function syncTargetSystemField() {
+      const tipo = document.getElementById('formTipoTramite').value;
+      document.getElementById('formSistemaDestino').value = targetSystem(tipo);
+    }
+
+    function renderAttachmentRows(record) {
+      const container = document.getElementById('attachmentRows');
+      container.innerHTML = '';
+
+      if (!record.adjuntos.length) {
+        container.innerHTML = '<div class="attachment-download-card"><div><strong>Sin documentos adjuntos</strong><span>El correo no contiene archivos para descargar.</span></div></div>';
+        return;
+      }
+
+      record.adjuntos.forEach((file, index) => {
+        const card = document.createElement('div');
+        card.className = 'attachment-download-card';
+
+        const info = document.createElement('div');
+        const title = document.createElement('strong');
+        title.textContent = file;
+        const meta = document.createElement('span');
+        meta.textContent = `Adjunto ${index + 1} · Caso ${record.id}`;
+        info.appendChild(title);
+        info.appendChild(meta);
+
+        const button = document.createElement('button');
+        button.className = 'btn-secondary btn-mini';
+        button.textContent = 'Descargar';
+        button.onclick = () => downloadAttachment(record.id, file);
+
+        card.appendChild(info);
+        card.appendChild(button);
+        container.appendChild(card);
+      });
+    }
+
+    function downloadAttachment(recordId, fileName) {
+      const record = records.find(r => r.id === recordId);
+      const storedFile = record?.adjuntoFiles?.[fileName];
+      if (storedFile?.url) {
+        const a = document.createElement('a');
+        a.href = storedFile.url;
+        a.download = fileName;
+        a.click();
+        showToast(`Descargando adjunto: ${fileName}`);
+        return;
+      }
+      const content = [
+        `Descarga simulada del archivo adjunto: ${fileName}`,
+        `Caso: ${recordId}`,
+        `Cliente: ${record?.cliente || 'Pendiente'}`,
+        `Tipo de trámite: ${record?.tipoTramite || 'No identificado'}`,
+        `Sistema destino: ${targetSystem(record?.tipoTramite || 'No identificado')}`,
+        '',
+        'Nota: en la integración real, este botón descargaría el archivo original recibido por correo.'
+      ].join('\n');
+
+      const blob = new Blob([content], { type: 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast(`Descargando adjunto: ${fileName}`);
+    }
+
+    function setFormValue(id, value, readOnly) {
+      const input = document.getElementById(id);
+      input.value = value || '';
+      input.readOnly = readOnly;
+    }
+
+    function setTextareaValue(id, value, readOnly) {
+      const input = document.getElementById(id);
+      input.value = value || '';
+      input.readOnly = readOnly;
+    }
+
+    function renderReviewActions(record, readOnly, canEditTipoTramite) {
+      const actions = document.getElementById('reviewActions');
+      if (record.estadoCaso === 'Completado') {
+        actions.innerHTML = '<button class="btn-primary" onclick="document.getElementById(\'reviewDialog\').close()">Cerrar</button>';
+        return;
+      }
+      if (readOnly) {
+        actions.innerHTML = `
+          <button class="btn-secondary" onclick="document.getElementById('reviewDialog').close()">Cerrar</button>
+          ${canEditTipoTramite ? '<button class="btn-success" onclick="saveReview()">Guardar tipo de trámite</button>' : ''}
+        `;
+        return;
+      }
+      actions.innerHTML = `
+        <button class="btn-secondary" onclick="document.getElementById('reviewDialog').close()">Cancelar</button>
+        <button class="btn-warning" onclick="saveReview()">Guardar revisión</button>
+        <button class="btn-success" onclick="confirmAndSendToSolser()">OK - Enviar a Solser</button>
+      `;
+    }
+
+    function renderInvoiceRows(record, readOnly) {
+      const tbody = document.getElementById('invoiceRows');
+      tbody.innerHTML = '';
+      record.facturas.forEach((invoice, index) => {
+        const readonlyAttr = readOnly ? 'readonly' : '';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td><input ${readonlyAttr} value="${escapeHtml(invoice.numero)}" onchange="updateInvoice(${index}, 'numero', this.value)"></td>
+          <td><input ${readonlyAttr} value="${escapeHtml(invoice.fecha)}" onchange="updateInvoice(${index}, 'fecha', this.value)"></td>
+          <td><input ${readonlyAttr} value="${escapeHtml(invoice.proveedor)}" onchange="updateInvoice(${index}, 'proveedor', this.value)"></td>
+          <td><input ${readonlyAttr} value="${escapeHtml(invoice.total)}" onchange="updateInvoice(${index}, 'total', this.value)"></td>
+          <td><input ${readonlyAttr} value="${escapeHtml(invoice.moneda)}" onchange="updateInvoice(${index}, 'moneda', this.value)"></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      if (!record.facturas.length) tbody.innerHTML = '<tr><td colspan="6">No se encontraron facturas extraídas.</td></tr>';
+    }
+
+    function updateInvoice(index, field, value) {
+      const id = document.getElementById('activeRecordId').value;
+      const record = records.find(r => r.id === id);
+      if (!record || record.estadoSolser === 'Enviado a Solser') return;
+      record.facturas[index][field] = value;
+    }
+
+    function collectFormData(record) {
+      record.cliente = document.getElementById('formCliente').value.trim();
+      record.servicio = document.getElementById('formServicio').value.trim();
+      record.importador = document.getElementById('formImportador').value.trim() || record.cliente;
+      record.bl = document.getElementById('formBl').value.trim();
+      record.datos.mercancia = document.getElementById('formMercancia').value.trim();
+      record.datos.moneda = document.getElementById('formMoneda').value.trim();
+      record.datos.origen = document.getElementById('formOrigen').value.trim();
+      record.datos.destino = document.getElementById('formDestino').value.trim();
+      record.datos.proveedor = document.getElementById('formProveedor').value.trim();
+      record.datos.pesoBruto = document.getElementById('formPesoBruto').value.trim();
+      record.datos.pesoNeto = document.getElementById('formPesoNeto').value.trim();
+      record.datos.volumen = document.getElementById('formVolumen').value.trim();
+      record.datos.observaciones = document.getElementById('formObservaciones').value.trim();
+      if (record.estadoCaso !== 'Completado') {
+        record.tipoTramite = document.getElementById('formTipoTramite').value;
+      }
+    }
+
+    function saveReview() {
+      const id = document.getElementById('activeRecordId').value;
+      const record = records.find(r => r.id === id);
+      if (!record) return;
+      if (record.estadoCaso === 'Completado') {
+        showToast('El caso está completado. El tipo de trámite no se puede modificar.');
+        return;
+      }
+      collectFormData(record);
+      document.getElementById('reviewDialog').close();
+      renderTable();
+      showToast(record.estadoSolser === 'Enviado a Solser' ? 'Tipo de trámite actualizado.' : 'Datos guardados para revisión.');
+    }
+
+    function confirmAndSendToSolser() {
+      const id = document.getElementById('activeRecordId').value;
+      const record = records.find(r => r.id === id);
+      if (!record) return;
+      collectFormData(record);
+
+      const missing = [];
+      if (!record.cliente) missing.push('Cliente');
+      if (!record.servicio) missing.push('Servicio');
+      if (!record.importador) missing.push('Importador');
+      if (!record.datos.mercancia) missing.push('Mercancía');
+      if (record.tipoTramite === 'No identificado') missing.push('Tipo de trámite identificable en asunto');
+      if (!record.adjuntos.length) missing.push('Documentos adjuntos');
+
+      if (missing.length) {
+        showToast(`Faltan datos obligatorios: ${missing.join(', ')}`);
+        return;
+      }
+
+      record.estadoSolser = 'Enviado a Solser';
+      record.excepcion = '';
+      record.ot = record.ot || generateOtNumber();
+      record.datos.observaciones = 'Datos confirmados por usuario y enviados a Solser.';
+      updateCaseStatus(record);
+      document.getElementById('reviewDialog').close();
+      renderTable();
+      showToast(`Solicitud enviada a Solser. Código OT: ${record.ot}`);
+    }
+
+    function openItems(id) {
+      const record = records.find(r => r.id === id);
+      if (!record) return;
+      document.getElementById('activeItemsRecordId').value = id;
+      const readonly = record.estadoIngreso === 'Enviado API';
+      document.getElementById('itemsTitle').textContent = `Verificar items - ${record.id}`;
+      document.getElementById('itemsSubtitle').textContent = `${targetSystem(record.tipoTramite)} · Factura FAEVII14590 · ${record.items.length} ítem(s)`;
+      document.getElementById('itemsModeBadge').textContent = readonly ? 'Enviado API' : 'Pendiente';
+      document.getElementById('itemsModeBadge').className = `badge ${readonly ? 'success' : 'info'}`;
+      document.getElementById('itemsHelpText').textContent = readonly ? 'Los ítems ya fueron enviados por API. La información se muestra solo para consulta.' : 'Puedes revisar, editar y agregar columnas adicionales antes de enviar por API.';
+      document.getElementById('itemsEditActions').classList.toggle('hidden', readonly);
+      renderItemsTable(record, readonly);
+      document.getElementById('itemsDialog').showModal();
+    }
+
+    function renderItemsTable(record, readonly) {
+      renderItemChips(record, readonly);
+      const head = document.getElementById('itemsHead');
+      let header = `
+        <tr>
+          <th>#</th>
+          <th>Factura</th>
+          <th>Código artículo</th>
+          <th>Cantidad</th>
+          <th>Descripción según factura</th>
+          <th>P.U según factura</th>
+          <th>Total</th>
+      `;
+      record.extraColumns.forEach(col => header += `<th>${escapeHtml(col.label)}</th>`);
+      header += '</tr>';
+      head.innerHTML = header;
+
+      const body = document.getElementById('itemsBody');
+      body.innerHTML = '';
+      if (!record.items.length) {
+        body.innerHTML = `<tr><td colspan="${7 + record.extraColumns.length}">No existen ítems para verificar. Revise si el correo contiene documentos adjuntos válidos.</td></tr>`;
+        return;
+      }
+
+      record.items.forEach((item, index) => {
+        const readonlyAttr = readonly ? 'readonly' : '';
+        let row = `
+          <tr>
+            <td>${index + 1}</td>
+            <td><input ${readonlyAttr} value="${escapeHtml(item.factura)}" onchange="updateItem(${index}, 'factura', this.value)"></td>
+            <td><input ${readonlyAttr} value="${escapeHtml(item.codigo)}" onchange="updateItem(${index}, 'codigo', this.value)"></td>
+            <td><input ${readonlyAttr} value="${escapeHtml(item.cantidad)}" onchange="updateItem(${index}, 'cantidad', this.value)"></td>
+            <td><input ${readonlyAttr} value="${escapeHtml(item.descripcion)}" onchange="updateItem(${index}, 'descripcion', this.value)"></td>
+            <td><input ${readonlyAttr} value="${escapeHtml(item.pu)}" onchange="updateItem(${index}, 'pu', this.value)"></td>
+            <td><input ${readonlyAttr} value="${escapeHtml(item.total)}" onchange="updateItem(${index}, 'total', this.value)"></td>
+        `;
+        record.extraColumns.forEach(col => {
+          row += `<td><input ${readonlyAttr} value="${escapeHtml(item.extras?.[col.key] || '')}" onchange="updateItemExtra(${index}, '${col.key}', this.value)"></td>`;
+        });
+        row += '</tr>';
+        body.insertAdjacentHTML('beforeend', row);
+      });
+    }
+
+    function renderItemChips(record, readonly) {
+      const chips = document.getElementById('extraColumnChips');
+      chips.innerHTML = '';
+      record.extraColumns.forEach(col => {
+        const closeBtn = readonly ? '' : `<button onclick="removeExtraColumn('${col.key}')">×</button>`;
+        chips.insertAdjacentHTML('beforeend', `<span class="chip">${escapeHtml(col.label)} ${closeBtn}</span>`);
+      });
+    }
+
+    function updateItem(index, field, value) {
+      const record = getActiveItemsRecord();
+      if (!record || record.estadoIngreso === 'Enviado API') return;
+      record.items[index][field] = value;
+    }
+
+    function updateItemExtra(index, key, value) {
+      const record = getActiveItemsRecord();
+      if (!record || record.estadoIngreso === 'Enviado API') return;
+      record.items[index].extras = record.items[index].extras || {};
+      record.items[index].extras[key] = value;
+    }
+
+    function getActiveItemsRecord() {
+      const id = document.getElementById('activeItemsRecordId').value;
+      return records.find(r => r.id === id);
+    }
+
+    function openColumnDialog() {
+      refreshExtraColumnSelect();
+      toggleOtherColumnName();
+      toggleDefaultValueInput();
+      document.getElementById('columnDialog').showModal();
+    }
+
+    function refreshExtraColumnSelect() {
+      const record = getActiveItemsRecord();
+      const select = document.getElementById('extraColumnSelect');
+      const usedKeys = new Set((record?.extraColumns || []).map(col => col.key));
+      select.innerHTML = '';
+      availableExtraColumns.filter(col => col.key === 'otro' || !usedKeys.has(col.key)).forEach(col => {
+        select.insertAdjacentHTML('beforeend', `<option value="${col.key}">${col.label}</option>`);
+      });
+    }
+
+    function toggleOtherColumnName() {
+      const value = document.getElementById('extraColumnSelect').value;
+      document.getElementById('otherColumnNameBox').classList.toggle('hidden', value !== 'otro');
+    }
+
+    function toggleDefaultValueInput() {
+      const mode = document.getElementById('columnRuleSelect').value;
+      document.getElementById('defaultValueBox').classList.toggle('hidden', mode !== 'default_value');
+    }
+
+    function applyExtraColumn() {
+      const record = getActiveItemsRecord();
+      if (!record) return;
+      const selected = document.getElementById('extraColumnSelect').value;
+      const rule = document.getElementById('columnRuleSelect').value;
+      const defaultValue = document.getElementById('defaultValueInput').value.trim();
+      let config = availableExtraColumns.find(col => col.key === selected);
+
+      if (selected === 'otro') {
+        const customName = document.getElementById('otherColumnNameInput').value.trim();
+        if (!customName) {
+          showToast('Digite el nombre de la columna Otro.');
+          return;
+        }
+        config = { key: `otro_${Date.now()}`, label: customName };
+      } else if (record.extraColumns.some(col => col.key === selected)) {
+        showToast('La columna ya fue agregada.');
+        return;
+      }
+
+      if (rule === 'default_value' && !defaultValue) {
+        showToast('Digite el valor por defecto.');
+        return;
+      }
+
+      record.extraColumns.push(config);
+      record.items.forEach(item => {
+        item.extras = item.extras || {};
+        item.extras[config.key] = rule === 'default_value' ? defaultValue : getRuleValue(config.key, rule, item, record);
+      });
+
+      document.getElementById('defaultValueInput').value = '';
+      document.getElementById('otherColumnNameInput').value = '';
+      document.getElementById('columnDialog').close();
+      renderItemsTable(record, false);
+      showToast(`Columna agregada: ${config.label}`);
+    }
+
+    function getRuleValue(columnKey, rule, item, record) {
+      const text = `${item.descripcion || ''}`.toLowerCase();
+      const category = text.includes('edredón') || text.includes('cobertor') ? 'cama' : text.includes('sábana') ? 'sabanas' : text.includes('funda') || text.includes('cojín') ? 'fundas' : 'general';
+      const maps = {
+        regla_1: {
+          referencia: record.id,
+          partida: category === 'cama' ? '9404.90.00' : category === 'sabanas' ? '6302.31.00' : category === 'fundas' ? '6304.93.00' : '6307.90.00',
+          codigo_valor: category === 'cama' ? 'VAL-CAMA' : category === 'sabanas' ? 'VAL-SAB' : category === 'fundas' ? 'VAL-FUN' : 'VAL-GEN',
+          codigo_golfito: record.tipoTramite === 'Zona franca' ? 'GOL-TEXTIL' : '',
+        },
+        regla_2: {
+          referencia: item.factura,
+          partida: 'TEXTIL-REV',
+          codigo_valor: 'REVISAR',
+          codigo_golfito: record.tipoTramite === 'Zona franca' ? 'ZF-REV' : '',
+        },
+        regla_3: {
+          referencia: `${record.cliente}-${item.codigo}`,
+          partida: 'PENDIENTE',
+          codigo_valor: 'PENDIENTE',
+          codigo_golfito: record.tipoTramite === 'Zona franca' ? 'PENDIENTE-ZF' : '',
+        }
+      };
+      return maps[rule]?.[columnKey] || '';
+    }
+
+    function removeExtraColumn(key) {
+      const record = getActiveItemsRecord();
+      if (!record || record.estadoIngreso === 'Enviado API') return;
+      record.extraColumns = record.extraColumns.filter(col => col.key !== key);
+      record.items.forEach(item => { if (item.extras) delete item.extras[key]; });
+      renderItemsTable(record, false);
+    }
+
+    function sendItemsApi() {
+      const record = getActiveItemsRecord();
+      if (!record) return;
+      if (record.estadoSolser !== 'Enviado a Solser') {
+        showToast('Primero debe estar enviado a Solser para completar el ingreso API.');
+        return;
+      }
+      if (!record.items.length) {
+        showToast('No existen ítems para enviar por API.');
+        return;
+      }
+      record.estadoIngreso = 'Enviado API';
+      updateCaseStatus(record);
+      document.getElementById('itemsDialog').close();
+      renderTable();
+      showToast(`Ítems enviados por API a ${targetSystem(record.tipoTramite)}.`);
+    }
+
+
+
+    function openManualCaseDialog() {
+      document.getElementById('manualCliente').value = '';
+      document.getElementById('manualServicio').value = '';
+      document.getElementById('manualImportador').value = '';
+      document.getElementById('manualTipoTramite').value = 'Importación';
+      document.getElementById('manualObservaciones').value = '';
+      document.getElementById('manualAdjuntos').value = '';
+      document.getElementById('manualFilePreview').innerHTML = '';
+      syncManualTargetSystemField();
+      document.getElementById('manualCaseDialog').showModal();
+    }
+
+    function syncManualTargetSystemField() {
+      const tipo = document.getElementById('manualTipoTramite').value;
+      document.getElementById('manualSistemaDestino').value = targetSystem(tipo);
+    }
+
+    function renderManualFilePreview() {
+      const files = Array.from(document.getElementById('manualAdjuntos').files || []);
+      const preview = document.getElementById('manualFilePreview');
+      preview.innerHTML = '';
+      files.forEach(file => {
+        const sizeKb = Math.max(1, Math.round(file.size / 1024));
+        preview.insertAdjacentHTML('beforeend', `<span class="file-pill">${escapeHtml(file.name)} · ${sizeKb} KB</span>`);
+      });
+    }
+
+    function createManualCase() {
+      const cliente = document.getElementById('manualCliente').value.trim();
+      const servicio = document.getElementById('manualServicio').value.trim();
+      const tipoTramite = document.getElementById('manualTipoTramite').value;
+      const importador = document.getElementById('manualImportador').value.trim();
+      const observaciones = document.getElementById('manualObservaciones').value.trim();
+      const files = Array.from(document.getElementById('manualAdjuntos').files || []);
+
+      const missing = [];
+      if (!cliente) missing.push('Cliente');
+      if (!servicio) missing.push('Servicio');
+      if (!tipoTramite || tipoTramite === 'No identificado') missing.push('Tipo de trámite válido');
+      if (!importador) missing.push('Importador');
+      if (!files.length) missing.push('Archivos adjuntos');
+
+      if (missing.length) {
+        showToast(`Faltan datos obligatorios: ${missing.join(', ')}`);
+        return;
+      }
+
+      const adjuntoFiles = {};
+      const adjuntos = files.map((file, index) => {
+        const safeName = files.filter(f => f.name === file.name).length > 1 ? `${index + 1}_${file.name}` : file.name;
+        adjuntoFiles[safeName] = {
+          name: safeName,
+          originalName: file.name,
+          size: file.size,
+          type: file.type || 'application/octet-stream',
+          url: URL.createObjectURL(file)
+        };
+        return safeName;
+      });
+
+      const record = {
+        id: generateManualRecordId(),
+        fecha: getNowDateTimeLocal(),
+        remitente: '',
+        asunto: '',
+        cliente,
+        servicio,
+        importador,
+        adjuntos,
+        adjuntoFiles,
+        bl: '',
+        tipoTramite,
+        origenCaso: 'Manual',
+        facturas: [],
+        items: [],
+        estadoSolser: 'Excepción',
+        estadoIngreso: 'Pendiente',
+        estadoCaso: 'Pendiente',
+        excepcion: 'Caso manual creado en la aplicación. Pendiente de confirmar y enviar a Solser.',
+        ot: '',
+        extraColumns: [],
+        datos: {
+          mercancia: '',
+          moneda: 'USD',
+          origen: '',
+          destino: '',
+          proveedor: '',
+          pesoBruto: '',
+          pesoNeto: '',
+          volumen: '',
+          observaciones: observaciones || 'Caso manual creado en la aplicación.'
+        }
+      };
+
+      records.unshift(record);
+      document.getElementById('manualCaseDialog').close();
+      renderTable();
+      showToast(`Caso manual ${record.id} creado y cargado correctamente.`);
+    }
+
+    function generateManualRecordId() {
+      const next = records.filter(r => String(r.id).startsWith('MAN-')).length + 1;
+      return `MAN-${String(next).padStart(3, '0')}`;
+    }
+
+    function getNowDateTimeLocal() {
+      const now = new Date();
+      const pad = value => String(value).padStart(2, '0');
+      return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    }
+
+    function updateCaseStatus(record) {
+      record.estadoCaso = record.estadoSolser === 'Enviado a Solser' && record.estadoIngreso === 'Enviado API' ? 'Completado' : 'Pendiente';
+    }
+
+    function exportInbox() {
+      const rows = getFilteredRecords();
+      const headers = ['id','fecha_recepcion','remitente','asunto','tipo_tramite','cliente','servicio','importador','adjuntos','bl','facturas','numero_items_totales','estado_solser','estado_ingreso','estado_caso','observaciones','codigo_ot'];
+      const csvRows = [headers, ...rows.map(r => [
+        r.id, r.fecha, r.remitente, r.asunto, r.tipoTramite, r.cliente, r.servicio, r.importador,
+        r.adjuntos.join(' | '), r.bl, r.facturas.length, r.items.length, r.estadoSolser, r.estadoIngreso, r.estadoCaso,
+        r.excepcion || r.datos.observaciones, r.ot
+      ])];
+      const csv = csvRows.map(row => row.map(value => `"${String(value || '').replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'bandeja_solicitudes_correo.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function refreshInbox() {
+      showToast('Bandeja actualizada. Se muestran 10 casos de ejemplo.');
+    }
+
+    function generateOtNumber() {
+      return 'OT-' + Math.floor(900000 + Math.random() * 99999);
+    }
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3200);
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>
